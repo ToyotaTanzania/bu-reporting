@@ -1,0 +1,46 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+.env/
+.env.*
+
+# VS Code settings
+.vscode/
+
+# MacOS
+.DS_Store
+
+# Logs
+*.log
+
+# Database / SQLite files
+*.db
+*.sqlite3
+
+# Pycharm
+.idea/
+
+# Python packages
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Coverage reports
+.coverage
+htmlcov/
+*.cover
+*.py,cover
+
+# mypy type checking
+.mypy_cache/
+
+# Test results
+.pytest_cache/
+
+# App Engine
+*.yaml.user
