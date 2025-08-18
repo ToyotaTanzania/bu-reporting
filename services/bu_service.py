@@ -1,0 +1,53 @@
+import pymssql
+import logging
+from helpers import fetch_data, update_items_from_xml
+
+class ReportingService:
+    def __init__(self, db: pymssql.Connection):
+        self.db = db
+
+    # --- Fetching data ---
+    def fetch_business_units(self, user_id: int):
+        logging.info(f"Fetching business units for user {user_id}")
+        return fetch_data(db=self.db, proc_name="usp_get_business_units", params=(user_id,))
+
+    def fetch_okrs(self, user_id: int):
+        logging.info(f"Fetching OKRs for user {user_id}")
+        return fetch_data(db=self.db, proc_name="usp_get_okr_details", params=(user_id,))
+
+    def fetch_commentaries(self, user_id: int):
+        logging.info(f"Fetching commentaries for user {user_id}")
+        return fetch_data(db=self.db, proc_name="usp_get_commentary_details", params=(user_id,))
+
+    def fetch_priorities(self, user_id: int):
+        logging.info(f"Fetching priorities for user {user_id}")
+        return fetch_data(db=self.db, proc_name="usp_get_priorities", params=(user_id,))
+
+    def fetch_tracker_statuses(self, user_id: int):
+        logging.info(f"Fetching tracker statuses for user {user_id}")
+        return fetch_data(db=self.db, proc_name="usp_get_ops_tracker_statuses", params=(user_id,))
+
+    def fetch_overdues(self, user_id: int):
+        logging.info(f"Fetching overdues for user {user_id}")
+        return fetch_data(db=self.db, proc_name="usp_get_ops_overdues", params=(user_id,))
+
+    # --- Bulk updates ---
+    def bulk_update_okrs(self, xml_string: str, user_id: int):
+        logging.info(f"Bulk updating OKRs for user {user_id}")
+        return update_items_from_xml(db=self.db, table_name="okr_details", xml_string=xml_string, user_id=user_id, item_name="OKRs")
+
+    def bulk_update_commentaries(self, xml_string: str, user_id: int):
+        logging.info(f"Bulk updating commentaries for user {user_id}")
+        return update_items_from_xml(db=self.db, table_name="commentary_details", xml_string=xml_string, user_id=user_id, item_name="KJ OPS")
+
+    def bulk_update_priorities(self, xml_string: str, user_id: int):
+        logging.info(f"Bulk updating priorities for user {user_id}")
+        return update_items_from_xml(db=self.db, table_name="ops_priorities", xml_string=xml_string, user_id=user_id, item_name="Priorities")
+
+    def bulk_update_tracker_statuses(self, xml_string: str, user_id: int):
+        logging.info(f"Bulk updating tracker statuses for user {user_id}")
+        return update_items_from_xml(db=self.db, table_name="ops_tracker_statuses", xml_string=xml_string, user_id=user_id, item_name="Tracker Statuses")
+
+    def bulk_update_overdues(self, xml_string: str, user_id: int):
+        logging.info(f"Bulk updating overdues for user {user_id}")
+        return update_items_from_xml(db=self.db, table_name="ops_overdues", xml_string=xml_string, user_id=user_id, item_name="Overdues")
