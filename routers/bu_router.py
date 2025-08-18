@@ -10,10 +10,16 @@ def get_reporting_service(db: pymssql.Connection = Depends(get_db)) -> Reporting
     return ReportingService(db=db)
 
 
-@router.get("/business-units/{user_id}")
-def get_business_units(user_id: int, service: ReportingService = Depends(get_reporting_service)):
+@router.get("/business-units")
+def get_business_units(
+    x_user_id: Optional[int] = Header(None),
+    service: ReportingService = Depends(get_reporting_service)
+):
+    if x_user_id is None:
+        raise HTTPException(status_code=400, detail="X-User-ID header is missing or invalid.")
+    
     try:
-        return service.fetch_business_units(user_id=user_id)
+        return service.fetch_business_units(user_id=x_user_id)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {e}")
 
