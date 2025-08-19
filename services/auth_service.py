@@ -1,4 +1,5 @@
 import pymssql
+import logging
 from helpers import send_email
 
 def request_login_code(db: pymssql.Connection, email: str):
@@ -11,27 +12,27 @@ def request_login_code(db: pymssql.Connection, email: str):
             if result and result[0]:
                 plain_text_code = result[0]
                 
-                email_subject = "Your One-Time Login Code"
-                email_body = f"""
-                <html>
-                    <body>
-                        <p>Hello,</p>
-                        <p>Your one-time login code is: <strong>{plain_text_code}</strong></p>
-                        <p>This code will expire in 15 minutes.</p>
-                    </body>
-                </html>
-                """
-                
-                send_email(to_email=email, subject=email_subject, html_content=email_body)
-                print(f"PRODUCTION FLOW: Email with code {plain_text_code} sent to {email}.")
+        if plain_text_code:
+            email_subject = "Your One-Time Login Code"
+            email_body = f"""
+            <html>
+                <body>
+                    <p>Hello,</p>
+                    <p>Your one-time login code is: <strong>{plain_text_code}</strong></p>
+                    <p>This code will expire in 15 minutes.</p>
+                </body>
+            </html>
+            """
+            
+            send_email(to_email=email, subject=email_subject, html_content=email_body)
         
-        db.commit()
+            db.commit()
             
     except pymssql.Error as ex:
-        print(f"Database Service Error in request_login_code: {ex}")
+        logging.error(f"Database Service Error in request_login_code: {ex}")
         raise
             
-    return {"message": "If a matching account exists, a login code has been sent to your email."}
+    return {"message": "The login code was sent to your email account registered with BU Reporting. Please check your inbox."}
 
 
 def verify_login_and_get_user(db: pymssql.Connection, email: str, code: str):
