@@ -40,4 +40,4 @@ app.include_router(auth_router, prefix=f"{settings.API_V1_PREFIX}/auth", tags=["
 
 @app.get("/", tags=["Root"])
 def read_root():
-    return {"message": f"Welcome to the {settings.PROJECT_NAME}"}
+    return {"message": f"Welcome to the {settings.PROJECT_NAME}."}
