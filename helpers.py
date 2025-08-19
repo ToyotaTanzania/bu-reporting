@@ -6,10 +6,6 @@ from email.mime.multipart import MIMEMultipart
 from config import settings
 
 def update_items_from_xml(db: pymssql.Connection, table_name: str, xml_string: str, user_id: int, item_name: str):
-    """
-    Executes the bulk update and returns a detailed success message,
-    including a specific message when no changes are made.
-    """
     try:
         with db.cursor(as_dict=True) as cursor:
             sql_command = "EXEC usp_bulk_update @tableName=%s, @xmlText=%s, @userID=%d"
@@ -51,10 +47,6 @@ def fetch_data(db: pymssql.Connection, proc_name: str, params: tuple = ()):
     return rows
 
 def send_email(to_email: str, subject: str, html_content: str):
-    """
-    Sends an email using the smtp.office365.com SMTP server.
-    Credentials are now sourced from the central settings object.
-    """
     sender_email = settings.SENDER_EMAIL
     sender_password = settings.SENDER_PASSWORD
 
