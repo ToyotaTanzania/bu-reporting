@@ -1,25 +1,34 @@
-name: Deploy to App Engine
+name: Deploy Flask App to App Engine
 
 on:
   push:
     branches:
-      - main  # Trigger deploy only on main branch
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-    - name: Set up Cloud SDK
-      uses: google-github-actions/setup-gcloud@v1
+    # Authenticate with your GCP Service Account
+    - id: 'auth'
+      uses: 'google-github-actions/auth@v2'
       with:
-        project_id: devproject212
-        service_account_key: ${{ secrets.GCP_SA_KEY }}
-        export_default_credentials: true
+        credentials_json: '${{ secrets.GCP_SA_KEY }}'
 
-    - name: Deploy to App Engine
-      run: |
-        gcloud app deploy app.yaml --quiet
+    # Deploy to App Engine
+    - id: 'deploy'
+      uses: 'google-github-actions/deploy-appengine@v2'
+      with:
+        project_id: 'devproject212'
+        deliverables: 'app.yaml'
+
+    # (Optional) Run a test against the deployed app
+    - name: Test deployment
+      run: curl "${{ steps.deploy.outputs.version_url }}"
