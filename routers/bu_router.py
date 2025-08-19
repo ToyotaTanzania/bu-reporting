@@ -23,40 +23,71 @@ def get_business_units(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {e}")
 
-@router.get("/okrs/{user_id}")
-def get_okrs(user_id: int, service: ReportingService = Depends(get_reporting_service)):
+@router.get("/okrs")
+def get_okrs(
+    x_user_id: Optional[int] = Header(None),
+    service: ReportingService = Depends(get_reporting_service)
+):
+    if x_user_id is None:
+        raise HTTPException(status_code=400, detail="X-User-ID header is missing or invalid.")
+    
     try:
-        return service.fetch_okrs(user_id=user_id)
+        return service.fetch_okrs(user_id=x_user_id)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {e}")
 
-@router.get("/commentaries/{user_id}")
-def get_commentaries(user_id: int, service: ReportingService = Depends(get_reporting_service)):
+@router.get("/commentaries")
+def get_commentaries(
+    x_user_id: Optional[int] = Header(None),
+    service: ReportingService = Depends(get_reporting_service)
+):
+    if x_user_id is None:
+        raise HTTPException(status_code=400, detail="X-User-ID header is missing or invalid.")
+    
     try:
-        return service.fetch_commentaries(user_id=user_id)
+        return service.fetch_commentaries(user_id=x_user_id)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {e}")
 
-@router.get("/priorities/{user_id}")
-def get_priorities(user_id: int, service: ReportingService = Depends(get_reporting_service)):
+@router.get("/priorities")
+def get_priorities(
+    x_user_id: Optional[int] = Header(None),
+    service: ReportingService = Depends(get_reporting_service)
+):
+    if x_user_id is None:
+        raise HTTPException(status_code=400, detail="X-User-ID header is missing or invalid.")
+    
     try:
-        return service.fetch_priorities(user_id=user_id)
+        return service.fetch_priorities(user_id=x_user_id)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {e}")
 
-@router.get("/tracker-statuses/{user_id}")
-def get_tracker_statuses(user_id: int, service: ReportingService = Depends(get_reporting_service)):
+@router.get("/tracker-statuses")
+def get_tracker_statuses(
+    x_user_id: Optional[int] = Header(None),
+    service: ReportingService = Depends(get_reporting_service)
+):
+    if x_user_id is None:
+        raise HTTPException(status_code=400, detail="X-User-ID header is missing or invalid.")
+    
     try:
-        return service.fetch_tracker_statuses(user_id=user_id)
+        return service.fetch_tracker_statuses(user_id=x_user_id)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {e}")
 
-@router.get("/overdues/{user_id}")
-def get_overdues(user_id: int, service: ReportingService = Depends(get_reporting_service)):
+@router.get("/overdues")
+def get_overdues(
+    x_user_id: Optional[int] = Header(None),
+    service: ReportingService = Depends(get_reporting_service)
+):
+    if x_user_id is None:
+        raise HTTPException(status_code=400, detail="X-User-ID header is missing or invalid.")
+    
     try:
-        return service.fetch_overdues(user_id=user_id)
+        return service.fetch_overdues(user_id=x_user_id)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {e}")
+
 
 
 @router.put("/okrs/bulk-update")
