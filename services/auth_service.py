@@ -52,27 +52,26 @@ class AuthService:
                 if user_data and user_data.get('user_id') > 0:
                     user_id = user_data['user_id']
                     first_name = user_data.get('first_name', 'User')
-                    is_admin = user_data.get('is_admin', False)
-                    period_start = user_data.get('period_start')
-                    period_end = user_data.get('period_end')
-                    is_period_closed = user_data.get('is_period_closed', False)
-                    is_priorities_month = user_data.get('is_priorities_month', False)
 
                     cursor.callproc('usp_get_user_permissions', (user_id,))
                     permissions = cursor.fetchall()
 
                     self.db.commit()
 
+                    user_session_data = {
+                        "is_admin": user_data.get('is_admin', False),
+                        "period_start": user_data.get('period_start'),
+                        "period_end": user_data.get('period_end'),
+                        "is_period_closed": user_data.get('is_period_closed', False),
+                        "is_priorities_month": user_data.get('is_priorities_month', False),
+                        "permissions": permissions
+                    }
+
                     return {
                         "user_id": user_id,
-                        "is_admin": is_admin,
-                        "period_start": period_start,
-                        "period_end": period_end,
-                        "is_period_closed": is_period_closed,
-                        "is_priorities_month": is_priorities_month,
                         "status": "success",
                         "message": f"Welcome, {first_name}!",
-                        "permissions": permissions
+                        "data": user_session_data
                     }
                 else:
                     return {"user_id": 0, "status": "failed", "message": "Invalid or expired login code."}
