@@ -20,7 +20,7 @@ class LoginSuccessResponse(BaseModel):
     is_admin: bool
     period_start: datetime
     period_end: datetime
-    period_closed_at: datetime
+    is_period_closed: bool
     is_priorities_month: bool
     status: str
     message: str
