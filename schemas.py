@@ -16,6 +16,7 @@ class PermissionResponse(BaseModel):
 
 class LoginSuccessResponse(BaseModel):
     user_id: int
+    is_admin: bool
     status: str
     message: str
     permissions: List[PermissionResponse]

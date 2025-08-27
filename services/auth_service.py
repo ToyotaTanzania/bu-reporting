@@ -52,6 +52,7 @@ class AuthService:
                 if user_data and user_data.get('user_id') > 0:
                     user_id = user_data['user_id']
                     first_name = user_data.get('first_name', 'User')
+                    is_admin = user_data.get('is_admin', False)
 
                     cursor.callproc('usp_get_user_permissions', (user_id,))
                     permissions = cursor.fetchall()
@@ -60,8 +61,9 @@ class AuthService:
 
                     return {
                         "user_id": user_id,
+                        "is_admin": is_admin,
                         "status": "success",
-                        "message": f"Welcome {first_name}!",
+                        "message": f"Welcome, {first_name}!",
                         "permissions": permissions
                     }
                 else:
