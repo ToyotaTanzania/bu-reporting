@@ -68,4 +68,5 @@ class AuthService:
                     return {"user_id": 0, "status": "failed", "message": "Invalid or expired login code."}
         except pymssql.Error as ex:
             logging.error(f"Database Service Error in verify_login_and_get_user: {ex}")
+            print(f"Database Service Error in verify_login_and_get_user: {ex}")
             raise
