@@ -55,7 +55,7 @@ class AuthService:
                     is_admin = user_data.get('is_admin', False)
                     period_start = user_data.get('period_start')
                     period_end = user_data.get('period_end')
-                    is_period_closed = user_data.get('period_closed_at')
+                    is_period_closed = user_data.get('is_period_closed', False)
                     is_priorities_month = user_data.get('is_priorities_month', False)
 
                     cursor.callproc('usp_get_user_permissions', (user_id,))
