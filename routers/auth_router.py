@@ -3,7 +3,7 @@ import pymssql
 
 from services.auth_service import AuthService
 from database import get_db
-from schemas import LoginRequest, VerifyRequest, LoginSuccessResponse, PermissionResponse
+from schemas import LoginRequest, VerifyRequest, LoginSuccessResponse
 
 router = APIRouter()
 
