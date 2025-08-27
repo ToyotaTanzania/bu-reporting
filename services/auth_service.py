@@ -9,12 +9,11 @@ class AuthService:
     def request_login_code(self, email: str):
         try:
             with self.db.cursor() as cursor:
-                sql = "DECLARE @code_out NCHAR(6); EXEC usp_generate_login_code @email=%s, @plainTextCode=@code_out OUTPUT; SELECT @code_out;"
-                cursor.execute(sql, (email,))
+                cursor.callproc('usp_generate_login_code', (email,))
                 result = cursor.fetchone()
 
-                if result and result[0]:
-                    plain_text_code = result[0]
+                if result and result.get('login_code'):
+                    plain_text_code = result['login_code']
                     
                     email_subject = "Your One-Time Login Code"
                     email_body = f"""
@@ -77,5 +76,4 @@ class AuthService:
                     return {"user_id": 0, "status": "failed", "message": "Invalid or expired login code."}
         except pymssql.Error as ex:
             logging.error(f"Database Service Error in verify_login_and_get_user: {ex}")
-            print(f"Database Service Error in verify_login_and_get_user: {ex}")
             raise
