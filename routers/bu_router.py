@@ -1,8 +1,11 @@
+import pymssql
 from fastapi import APIRouter, Request, Header, Depends, HTTPException
 from typing import Optional, Callable
 from services.bu_service import ReportingService
 from database import get_db
-import pymssql
+from datetime import datetime
+from starlette.responses import StreamingResponse
+
 
 router = APIRouter()
 
@@ -179,3 +182,19 @@ async def bulk_update_overdues(
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {e}")
+
+@router.get("/reports/monthly-presentation/{user_id}")
+def get_monthly_report_v2(
+    user_id: int,
+    service: ReportingService = Depends(get_reporting_service)
+):
+    try:
+        ppt_stream = service.create_monthly_presentation(user_id=user_id)
+        filename = f"Monthly_Report_{user_id}_{datetime.now().strftime('%Y%m%d')}.pptx"
+        return StreamingResponse(
+            ppt_stream,
+            media_type="application/vnd.openxmlformats-officedocument.presentationml.presentation",
+            headers={'Content-Disposition': f'attachment; filename="{filename}"'}
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

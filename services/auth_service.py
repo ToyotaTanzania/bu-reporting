@@ -1,25 +1,31 @@
 import pymssql
 import logging
+import re
 from helpers import send_email
+
 
 class AuthService:
     def __init__(self, db: pymssql.Connection):
         self.db = db
 
     def request_login_code(self, email: str):
+        email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        if not re.match(email_regex, email):
+            raise ValueError("Invalid email provided.")
+        
         try:
             with self.db.cursor() as cursor:
                 cursor.callproc('usp_generate_login_code', (email,))
                 result = cursor.fetchone()
 
                 if result and result.get('login_code'):
-                    plain_text_code = result['login_code']
+                    login_code = result['login_code']
                     
                     email_subject = "Your One-Time Login Code"
                     email_body = f"""
                     <html><body>
                         <p>Hello,</p>
-                        <p>Your one-time login code is: <strong>{plain_text_code}</strong></p>
+                        <p>Your one-time login code is: <strong>{login_code}</strong></p>
                         <p>This code will expire in 60 minutes.</p>
                         <p>If you did not request this code, you can safely ignore this email.</p>
                         <p>Thank you,<br>BU Reporting Team</p>
