@@ -19,7 +19,9 @@ def request_login_code(db: pymssql.Connection, email: str):
                 <body>
                     <p>Hello,</p>
                     <p>Your one-time login code is: <strong>{plain_text_code}</strong></p>
-                    <p>This code will expire in 15 minutes.</p>
+                    <p>This code will expire in 60 minutes.</p>
+                    <p>If you did not request this code, you can safely ignore this email.</p>
+                    <p>Thank you,<br>BU Reporting Team</p>
                 </body>
             </html>
             """
@@ -32,7 +34,7 @@ def request_login_code(db: pymssql.Connection, email: str):
         logging.error(f"Database Service Error in request_login_code: {ex}")
         raise
             
-    return {"message": "The login code was sent to your email account registered with BU Reporting. Please check your inbox."}
+    return {"message": "A login code has been sent to your email. Please check your inbox."}
 
 
 def verify_login_and_get_user(db: pymssql.Connection, email: str, code: str):
