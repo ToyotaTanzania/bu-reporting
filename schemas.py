@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import List
+from datetime import datetime
 
 
 class LoginRequest(BaseModel):
@@ -17,6 +18,10 @@ class PermissionResponse(BaseModel):
 class LoginSuccessResponse(BaseModel):
     user_id: int
     is_admin: bool
+    period_start: datetime
+    period_end: datetime
+    period_closed_at: datetime
+    is_priorities_month: bool
     status: str
     message: str
     permissions: List[PermissionResponse]
