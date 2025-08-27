@@ -118,9 +118,6 @@ BULLET_POINT_SPACING = Inches(0.0)
 
 
 def create_custom_presentation_from_xml(xml_string: str) -> io.BytesIO:
-    """
-    Takes a complex report XML string and builds a PowerPoint presentation.
-    """
     try:
         root = ET.fromstring(xml_string)
         prs = Presentation()

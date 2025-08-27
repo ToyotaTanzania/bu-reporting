@@ -6,7 +6,6 @@ class ReportingService:
     def __init__(self, db: pymssql.Connection):
         self.db = db
 
-    # --- Fetching data ---
     def fetch_business_units(self, user_id: int):
         logging.info(f"Fetching business units for user {user_id}")
         return fetch_data(db=self.db, proc_name="usp_get_business_units", params=(user_id,))
@@ -30,8 +29,8 @@ class ReportingService:
     def fetch_overdues(self, user_id: int):
         logging.info(f"Fetching overdues for user {user_id}")
         return fetch_data(db=self.db, proc_name="usp_get_ops_overdues", params=(user_id,))
+    
 
-    # --- Bulk updates ---
     def bulk_update_okrs(self, xml_string: str, user_id: int):
         logging.info(f"Bulk updating OKRs for user {user_id}")
         return update_items_from_xml(db=self.db, table_name="okr_details", xml_string=xml_string, user_id=user_id, item_name="OKRs")
