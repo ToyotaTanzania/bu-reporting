@@ -44,10 +44,22 @@ def verify_login_and_get_user(db: pymssql.Connection, email: str, code: str):
             user_data = cursor.fetchone()
             
             if user_data and user_data.get('user_id') > 0:
+                user_id = user_data['user_id']
+                first_name = user_data['first_name']
+
+                cursor.callproc('usp_get_user_permissions', (user_id,))
+                permissions = cursor.fetchall()
+
                 db.commit()
-                return {"user_id": user_data['user_id'], "status": "success"}
+
+                return {
+                    "user_id": user_id,
+                    "status": "success",
+                    "message": f"Welcome {first_name}!",
+                    "permissions": permissions
+                    }
             else:
-                return {"user_id": 0, "status": "failed"}        
+                return {"user_id": 0, "status": "failed", "message": "Invalid or expired login code."}        
     except pymssql.Error as ex:
         print(f"Database Service Error in verify_login_and_get_user: {ex}")
         raise

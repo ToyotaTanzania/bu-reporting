@@ -1,0 +1,21 @@
+from pydantic import BaseModel
+from typing import List
+
+
+class LoginRequest(BaseModel):
+    email: str
+
+class VerifyRequest(BaseModel):
+    email: str
+    code: str
+
+class PermissionResponse(BaseModel):
+    module_name: str
+    bu_name: str
+    access_type: str
+
+class LoginSuccessResponse(BaseModel):
+    user_id: int
+    status: str
+    message: str
+    permissions: List[PermissionResponse]
