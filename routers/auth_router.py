@@ -1,5 +1,4 @@
-from fastapi import APIRouter, Depends, Header, HTTPException
-from typing import Optional
+from fastapi import APIRouter, Depends, HTTPException
 import pymssql
 
 from services.auth_service import AuthService
