@@ -91,6 +91,15 @@ def get_overdues(
         return service.fetch_overdues(user_id=x_user_id)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {e}")
+    
+@router.get("/okr-submissions")
+def get_okr_submissions(
+    service: ReportingService = Depends(get_reporting_service)
+):
+    try:
+        return service.fetch_okr_submissions()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {e}")
 
 
 

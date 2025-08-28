@@ -29,6 +29,10 @@ class ReportingService:
     def fetch_overdues(self, user_id: int):
         logging.info(f"Fetching overdues for user {user_id}")
         return fetch_data(db=self.db, proc_name="usp_get_ops_overdues", params=(user_id,))
+
+    def fetch_okr_submissions(self):
+        logging.info(f"Fetching okr submissions")
+        return fetch_data(db=self.db, proc_name="usp_get_okr_submissions", params=())
     
 
     def bulk_update_okrs(self, xml_string: str, user_id: int):
