@@ -1,6 +1,6 @@
 import pymssql
 import logging
-from helpers import fetch_data, update_items_from_xml, create_custom_presentation_from_xml
+from helpers import fetch_data, update_items_from_xml, execute_proc_for_xml, create_custom_presentation_from_xml
 
 class ReportingService:
     def __init__(self, db: pymssql.Connection):
@@ -53,7 +53,7 @@ class ReportingService:
     
     def create_monthly_presentation(self, user_id: int):
         logging.info(f"Initiating custom PowerPoint report for user {user_id}")
-        xml_data = fetch_data(
+        xml_data = execute_proc_for_xml(
             db=self.db,
             proc_name='usp_generate_monthly_report_xml',
             params=(user_id,)

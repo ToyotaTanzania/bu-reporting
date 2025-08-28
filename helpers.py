@@ -56,6 +56,23 @@ def fetch_data(db: pymssql.Connection, proc_name: str, params: tuple = ()):
     
     return rows
 
+def execute_proc_for_xml(db: pymssql.Connection, proc_name: str, params: tuple) -> str:
+    """
+    A generic helper that executes a stored procedure and returns the first
+    column of the first row, expecting it to be an XML string.
+    """
+    try:
+        with db.cursor() as cursor:
+            cursor.callproc(proc_name, params)
+            result = cursor.fetchone()
+            if not result or not result[0]:
+                raise ValueError(f"Stored procedure '{proc_name}' did not return any data.")
+            # This correctly extracts the single string value from the database result tuple
+            return result[0]
+    except pymssql.Error as ex:
+        logging.error(f"Database error while executing '{proc_name}': {ex}")
+        raise
+
 def send_email(to_email: str, subject: str, html_content: str):
     sender_email = settings.SENDER_EMAIL
     sender_password = settings.SENDER_PASSWORD
@@ -82,7 +99,7 @@ def send_email(to_email: str, subject: str, html_content: str):
     except Exception as e:
         logging.error(f"An unexpected error occurred while sending email: {e}")
         return False
-    
+
 
 # --- Configuration Constants (Powerpoint presentation)---
 SLIDE_WIDTH = Inches(13.33)
