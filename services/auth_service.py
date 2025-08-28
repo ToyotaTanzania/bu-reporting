@@ -52,6 +52,8 @@ class AuthService:
         try:
             with self.db.cursor(as_dict=True) as cursor:
                 cursor.callproc('usp_verify_login_code', (email, code))
+                cursor.nextset()
+                
                 user_data = cursor.fetchone()
                 
                 if user_data and user_data.get('user_id') > 0:
