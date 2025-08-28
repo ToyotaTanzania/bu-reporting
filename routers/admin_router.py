@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Header
 from typing import Optional
-from services.bu_service import AdminService
+from services.admin_service import AdminService
 from database import get_db
 import pymssql
 from schemas import SetPeriodRequest
