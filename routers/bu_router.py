@@ -1,11 +1,10 @@
 import pymssql
 from fastapi import APIRouter, Request, Header, Depends, HTTPException
-from typing import Optional, Callable
+from typing import Optional
 from services.bu_service import ReportingService
 from database import get_db
 from datetime import datetime
 from starlette.responses import StreamingResponse
-from schemas import SetPeriodRequest
 
 
 router = APIRouter()
@@ -89,15 +88,6 @@ def get_overdues(
     
     try:
         return service.fetch_overdues(user_id=x_user_id)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {e}")
-    
-@router.get("/okrs/submissions")
-def get_okr_submissions(
-    service: ReportingService = Depends(get_reporting_service)
-):
-    try:
-        return service.fetch_okr_submissions()
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {e}")
 
@@ -211,23 +201,3 @@ def get_monthly_report(
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-    
-@router.post("/reporting-period")
-def set_reporting_period(
-    request: SetPeriodRequest,
-    x_user_id: Optional[int] = Header(None),
-    service: ReportingService = Depends(get_reporting_service)
-):
-    if x_user_id is None:
-        raise HTTPException(status_code=400, detail="X-User-ID header is missing or invalid.")
-    
-    try:
-        return service.set_reporting_period(
-            year=request.year,
-            month=request.month,
-            user_id=x_user_id
-        )
-    except pymssql.DatabaseError as db_error:
-        raise HTTPException(status_code=400, detail=str(db_error))
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {e}")
