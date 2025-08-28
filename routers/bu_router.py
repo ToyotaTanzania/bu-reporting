@@ -92,7 +92,7 @@ def get_overdues(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {e}")
     
-@router.get("/okr-submissions")
+@router.get("/okrs/submissions")
 def get_okr_submissions(
     service: ReportingService = Depends(get_reporting_service)
 ):
