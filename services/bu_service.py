@@ -59,3 +59,17 @@ class ReportingService:
             params=(user_id,)
         )
         return create_custom_presentation_from_xml(xml_string=xml_data)
+    
+    def set_reporting_period(self, year: int, month: int, user_id: int):
+        logging.info(f"Setting reporting period to {year}-{month} for user {user_id}")
+        try:
+            with self.db.cursor(as_dict=True) as cursor:
+                cursor.callproc('usp_set_reporting_period', (year, month, user_id))
+                self.db.commit()
+            return {"status": "success", "message": f"Reporting period successfully set to {year}-{month}."}
+        except pymssql.Error as e:
+            logging.error(f"Database error while setting reporting period: {e}")
+            return {"status": "error", "message": "Failed to set reporting period due to a database error."}
+        except Exception as e:
+            logging.error(f"Unexpected error while setting reporting period: {e}")
+            return {"status": "error", "message": "An unexpected error occurred while setting the reporting period."}

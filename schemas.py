@@ -37,3 +37,7 @@ class LoginSuccessResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class SetPeriodRequest(BaseModel):
+    year: int = Field(..., example=2025)
+    month: int = Field(..., example=9)
