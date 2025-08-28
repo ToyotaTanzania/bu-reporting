@@ -205,7 +205,7 @@ def get_monthly_report(
     
 @router.post("/reporting-period")
 def set_reporting_period(
-    period_request: SetPeriodRequest,
+    request: SetPeriodRequest,
     x_user_id: Optional[int] = Header(None),
     service: ReportingService = Depends(get_reporting_service)
 ):
@@ -214,8 +214,8 @@ def set_reporting_period(
     
     try:
         return service.set_reporting_period(
-            year=period_request.year,
-            month=period_request.month,
+            year=request.year,
+            month=request.month,
             user_id=x_user_id
         )
     except pymssql.DatabaseError as db_error:

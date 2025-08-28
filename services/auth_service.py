@@ -80,7 +80,7 @@ class AuthService:
                         "data": user_session_data
                     }
                 else:
-                    raise InvalidCredentialsError()
+                    return {"user_id": 0, "status": "failed", "message": "Invalid email or login code."}
         except pymssql.Error as ex:
             logging.error(f"Database Service Error in verify_login_and_get_user: {ex}")
             raise

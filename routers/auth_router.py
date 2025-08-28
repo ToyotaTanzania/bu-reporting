@@ -3,8 +3,8 @@ import pymssql
 
 from services.auth_service import AuthService
 from database import get_db
-from schemas import LoginRequest, VerifyRequest, LoginSuccessResponse
-from exceptions import InvalidCredentialsError
+from typing import Union
+from schemas import LoginRequest, VerifyRequest, LoginSuccessResponse, LoginFailedResponse
 
 router = APIRouter()
 
@@ -21,14 +21,12 @@ def request_code(
     except Exception as e:
         raise HTTPException(status_code=500, detail="An internal server error occurred while requesting the login code.")
 
-@router.post("/verify-code", response_model=LoginSuccessResponse)
+@router.post("/verify-code", response_model=Union[LoginSuccessResponse, LoginFailedResponse])
 def verify_code(
     request: VerifyRequest,
     service: AuthService = Depends(get_auth_service)
 ):
     try:
         return service.verify_login_and_get_user(email=request.email, code=request.code)
-    except InvalidCredentialsError:
-        raise HTTPException(status_code=401, detail="Invalid email or login code.")
     except Exception as e:
-        raise HTTPException(status_code=500, detail="An internal server error occurred.")
+        raise HTTPException(status_code=500, detail="An internal server error occurred during verification.")
