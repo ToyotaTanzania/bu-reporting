@@ -1,6 +1,6 @@
 import pymssql
 import logging
-from helpers import fetch_data, update_items_from_xml, execute_proc_for_xml, create_custom_presentation_from_xml
+from helpers import fetch_data, update_items_from_xml, create_custom_presentation_from_xml
 
 class ReportingService:
     def __init__(self, db: pymssql.Connection):
@@ -51,11 +51,11 @@ class ReportingService:
         logging.info(f"Bulk updating overdues for user {user_id}")
         return update_items_from_xml(db=self.db, table_name="ops_overdues", xml_string=xml_string, user_id=user_id, item_name="Overdues")
     
-    # def create_monthly_presentation(self, user_id: int):
-    #     logging.info(f"Initiating custom PowerPoint report for user {user_id}")
-    #     xml_data = execute_proc_for_xml(
-    #         db=self.db,
-    #         proc_name='usp_generate_monthly_report_xml',
-    #         params=(user_id,)
-    #     )
-    #     return create_custom_presentation_from_xml(xml_string=xml_data)
+    def create_monthly_presentation(self, user_id: int):
+        logging.info(f"Initiating custom PowerPoint report for user {user_id}")
+        xml_data = fetch_data(
+            db=self.db,
+            proc_name='usp_generate_monthly_report_xml',
+            params=(user_id,)
+        )
+        return create_custom_presentation_from_xml(xml_string=xml_data)
