@@ -61,7 +61,7 @@ class ReportingService:
         return create_custom_presentation_from_xml(xml_string=xml_data)
     
     def set_reporting_period(self, year: int, month: int, user_id: int):
-        logging.info(f"Setting reporting period to {year}-{month} for user {user_id}")
+        logging.info(f"Setting reporting period to {month}/{year} for user {user_id}")
         try:
             with self.db.cursor(as_dict=True) as cursor:
                 cursor.callproc('usp_set_reporting_period', (year, month, user_id))
