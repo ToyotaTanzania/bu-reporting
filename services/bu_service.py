@@ -67,9 +67,13 @@ class ReportingService:
                 cursor.callproc('usp_set_reporting_period', (year, month, user_id))
                 self.db.commit()
             return {"status": "success", "message": f"Reporting period successfully set to {month}/{year}."}
-        except pymssql.Error as e:
-            logging.error(f"Database error while setting reporting period: {e}")
-            return {"status": "error", "message": "Failed to set reporting period: {e}"}
+        except pymssql.Error as ex:
+            if "No changes were made" in str(ex):
+                logging.info("Reporting period was not changed as it's the same as the current period.")
+                return {"status": "unchanged", "message": "No changes were made to the reporting period."}
+            else:
+                logging.error(f"Database error while setting reporting period: {ex}")
+                raise
         except Exception as e:
             logging.error(f"Unexpected error while setting reporting period: {e}")
-            return {"status": "error", "message": "An unexpected error occurred while setting the reporting period."}
+            raise
