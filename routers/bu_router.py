@@ -213,8 +213,11 @@ def set_reporting_period(
         raise HTTPException(status_code=400, detail="X-User-ID header is missing or invalid.")
     
     try:
-        service.set_reporting_period(user_id=x_user_id, year=period_request.year, month=period_request.month)
-        return {"message": "Reporting period updated successfully."}
+        return service.set_report_period(
+            year=period_request.year,
+            month=period_request.month,
+            user_id=x_user_id
+        )
     except pymssql.DatabaseError as db_error:
         raise HTTPException(status_code=400, detail=str(db_error))
     except Exception as e:
