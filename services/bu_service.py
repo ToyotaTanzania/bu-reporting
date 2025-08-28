@@ -1,6 +1,7 @@
 import pymssql
 import logging
 from helpers import fetch_data, update_items_from_xml, execute_proc_for_xml, create_custom_presentation_from_xml
+from fastapi import Response
 
 class ReportingService:
     def __init__(self, db: pymssql.Connection):
@@ -66,7 +67,11 @@ class ReportingService:
             with self.db.cursor(as_dict=True) as cursor:
                 cursor.callproc('usp_set_reporting_period', (year, month, user_id))
                 self.db.commit()
-            return {"status": "success", "message": f"Reporting period successfully set to {year}-{month}."}
+            return Response(
+                content='{"status": "success", "message": f"Reporting period successfully set to {year}-{month}."}',
+                media_type="application/json",
+                status_code=200
+            )
         except pymssql.Error as e:
             logging.error(f"Database error while setting reporting period: {e}")
             return {"status": "error", "message": "Failed to set reporting period due to a database error."}
