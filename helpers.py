@@ -294,14 +294,24 @@ def add_combined_section(slide, page, x, y, width):
 
 def autofit_table_rows(table):
     col_widths = [col.width for col in table.columns]
+    
     for row in table.rows:
-        max_h = MIN_ROW_HEIGHT
+        max_cell_height = MIN_ROW_HEIGHT
+        
         for i, cell in enumerate(row.cells):
-            text_frame = cell.text_frame
-            text_frame.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
-            text_frame.word_wrap = True
-            if text_frame.height > max_h:
-                max_h = text_frame.height
-        row.height = max_h
-    for i, width in enumerate(col_widths):
-        table.columns[i].width = width
+            text = cell.text_frame.text
+            if not text:
+                continue
+                
+            text_length = len(text)
+            col_width = col_widths[i]
+            
+            chars_per_line = max(1, int(col_width / Pt(6)))
+            
+            lines_needed = math.ceil(text_length / chars_per_line)
+            
+            height_needed = max(MIN_ROW_HEIGHT, Pt(15) * lines_needed)
+            if height_needed > max_cell_height:
+                max_cell_height = height_needed
+        
+        row.height = max_cell_height
