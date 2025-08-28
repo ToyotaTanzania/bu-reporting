@@ -193,7 +193,7 @@ def get_monthly_report(
     
     try:
         ppt_stream = service.create_monthly_presentation(user_id=x_user_id)
-        filename = f"Monthly_Report_{x_user_id}_{datetime.now().strftime('%Y%m%d')}.pptx"
+        filename = f"Monthly_Report_{datetime.now().strftime('%Y%m%d%H%M%S')}.pptx"
         return StreamingResponse(
             ppt_stream,
             media_type="application/vnd.openxmlformats-officedocument.presentationml.presentation",
