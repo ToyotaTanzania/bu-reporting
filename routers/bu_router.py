@@ -213,7 +213,7 @@ def set_reporting_period(
         raise HTTPException(status_code=400, detail="X-User-ID header is missing or invalid.")
     
     try:
-        return service.set_report_period(
+        return service.set_reporting_period(
             year=period_request.year,
             month=period_request.month,
             user_id=x_user_id
