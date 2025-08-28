@@ -69,7 +69,7 @@ class ReportingService:
             return {"status": "success", "message": f"Reporting period successfully set to {month}/{year}."}
         except pymssql.Error as e:
             logging.error(f"Database error while setting reporting period: {e}")
-            return {"status": "error", "message": "Failed to set reporting period due to a database error."}
+            return {"status": "error", "message": "Failed to set reporting period: {e}"}
         except Exception as e:
             logging.error(f"Unexpected error while setting reporting period: {e}")
             return {"status": "error", "message": "An unexpected error occurred while setting the reporting period."}
