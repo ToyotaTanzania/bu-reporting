@@ -109,16 +109,6 @@ def get_monthly_report(
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-    
-@router.get("/okr-submissions")
-def get_okr_submissions(
-    service: ReportingService = Depends(get_reporting_service)
-):
-    try:
-        return service.fetch_okr_submissions()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {e}")
-
 
 
 @router.put("/okrs/bulk-update")

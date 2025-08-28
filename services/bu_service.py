@@ -39,10 +39,6 @@ class ReportingService:
         )
         return create_custom_presentation_from_xml(xml_string=xml_data)
     
-    def fetch_okr_submissions(self):
-        logging.info(f"Fetching okr submissions")
-        return fetch_data(db=self.db, proc_name="usp_get_okr_submissions", params=())
-    
 
     def bulk_update_okrs(self, xml_string: str, user_id: int):
         logging.info(f"Bulk updating OKRs for user {user_id}")
