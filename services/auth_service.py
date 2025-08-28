@@ -2,6 +2,7 @@ import pymssql
 import logging
 import re
 from helpers import send_email
+from exceptions import InvalidCredentialsError
 
 
 class AuthService:
@@ -79,7 +80,7 @@ class AuthService:
                         "data": user_session_data
                     }
                 else:
-                    return {"user_id": 0, "status": "failed", "message": "Invalid or expired login code."}
+                    raise InvalidCredentialsError()
         except pymssql.Error as ex:
             logging.error(f"Database Service Error in verify_login_and_get_user: {ex}")
             raise
