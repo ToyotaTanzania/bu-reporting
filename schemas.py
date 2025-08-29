@@ -37,3 +37,15 @@ class LoginSuccessResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class LoginFailedResponse(BaseModel):
+    user_id: int
+    status: str
+    message: str
+
+    class Config:
+        from_attributes = True
+
+class SetPeriodRequest(BaseModel):
+    year: int = Field(..., example=2025)
+    month: int = Field(..., example=9)
