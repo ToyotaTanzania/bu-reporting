@@ -68,7 +68,7 @@ def send_email(to_email: EmailStr, subject: str, html_content: str):
             server.sendmail(
                 sender_email, str(to_email), message.as_string()
             )
-            logger.info(f"Email sent successfully to {to_email}.")
+            logger.info(f"Email sent successfully to {str(to_email)}.")
             return True
 
     except smtplib.SMTPAuthenticationError:

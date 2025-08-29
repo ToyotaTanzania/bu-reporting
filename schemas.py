@@ -4,11 +4,21 @@ from datetime import datetime
 
 
 class LoginRequest(BaseModel):
-    email: EmailStr = Field(..., example="user@example.com")
+    email: EmailStr
+
+    class Config:
+        json_schema_extra = {
+            "example": {"email": "user@example.com"}
+        }
 
 class VerifyRequest(BaseModel):
-    email: EmailStr = Field(..., example="user@example.com")
-    code: str = Field(..., example="123456")
+    email: EmailStr
+    code: str
+
+    class Config:
+        json_schema_extra = {
+            "example": {"email": "user@example.com", "code": "123456"}
+        }
 
 class Permission(BaseModel):
     module_name: str
@@ -47,5 +57,10 @@ class LoginFailedResponse(BaseModel):
         from_attributes = True
 
 class SetPeriodRequest(BaseModel):
-    year: int = Field(..., example=2025)
-    month: int = Field(..., example=9)
+    year: int
+    month: int
+
+    class Config:
+        json_schema_extra = {
+            "example": {"year": 2025, "month": 9}
+        }
