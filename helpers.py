@@ -51,14 +51,14 @@ def fetch_data(db, proc_name: str, params: tuple = ()):
 
     return rows
 
-def send_email(to_email: EmailStr, subject: str, html_content: str):
+def send_email(to_email: str, subject: str, html_content: str):
     sender_email = settings.SENDER_EMAIL
     sender_password = settings.SENDER_PASSWORD
 
     message = MIMEMultipart("alternative")
     message["Subject"] = subject
     message["From"] = sender_email
-    message["To"] = str(to_email)
+    message["To"] = to_email
     message.attach(MIMEText(html_content, "html"))
 
     try:
@@ -66,9 +66,9 @@ def send_email(to_email: EmailStr, subject: str, html_content: str):
             server.starttls()
             server.login(sender_email, sender_password)
             server.sendmail(
-                sender_email, str(to_email), message.as_string()
+                sender_email, to_email, message.as_string()
             )
-            logger.info(f"Email sent successfully to {str(to_email)}.")
+            logger.info(f"Email sent successfully to {to_email}.")
             return True
 
     except smtplib.SMTPAuthenticationError:
