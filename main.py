@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 from config import settings, logger
 from routers.bu_router import router as bu_router
 from routers.auth_router import router as auth_router
+from routers.admin_router import router as admin_router
 from database import initialize_pool, close_pool
 from fastapi.responses import JSONResponse
 from fastapi.requests import Request
@@ -36,8 +37,8 @@ if settings.ALLOWED_ORIGINS and settings.ALLOWED_ORIGINS != ["*"]:
         CORSMiddleware,
         allow_origins=[str(origin) for origin in settings.ALLOWED_ORIGINS],
         allow_credentials=True,
-        allow_methods=["GET", "POST", "PUT", "DELETE"],  # Restrict to common methods
-        allow_headers=["Authorization", "Content-Type"],  # Restrict to necessary headers
+        allow_methods=["GET", "POST", "PUT", "DELETE"],
+        allow_headers=["Authorization", "Content-Type"],
     )
 else:
     logger.warning("CORS is set to allow all origins. This is insecure for production!")
@@ -56,6 +57,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 # --- Routers ---
 app.include_router(bu_router, prefix=settings.API_V1_PREFIX, tags=["Reporting"])
 app.include_router(auth_router, prefix=f"{settings.API_V1_PREFIX}/auth", tags=["Authentication"])
+app.include_router(admin_router, prefix=f"{settings.API_V1_PREFIX}/admin", tags=["Admin"])
 
 # --- Health Check Endpoint ---
 @app.get("/health", tags=["Health"])

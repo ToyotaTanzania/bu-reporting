@@ -29,6 +29,16 @@ class ReportingService:
     def fetch_overdues(self, user_id: int):
         logger.info(f"Fetching overdues for user {user_id}")
         return fetch_data(db=self.db, proc_name="usp_get_ops_overdues", params=(user_id,))
+
+
+    def create_monthly_presentation(self, user_id: int):
+        logger.info(f"Initiating custom PowerPoint report for user {user_id}")
+        xml_data = execute_proc_for_xml(
+            db=self.db,
+            proc_name='usp_generate_monthly_report_xml',
+            params=(user_id,)
+        )
+        return create_custom_presentation_from_xml(xml_string=xml_data)
     
 
     def bulk_update_okrs(self, xml_string: str, user_id: int):
@@ -50,12 +60,3 @@ class ReportingService:
     def bulk_update_overdues(self, xml_string: str, user_id: int):
         logger.info(f"Bulk updating overdues for user {user_id}")
         return update_items_from_xml(db=self.db, table_name="ops_overdues", xml_string=xml_string, user_id=user_id, item_name="Overdues")
-    
-    def create_monthly_presentation(self, user_id: int):
-        logger.info(f"Initiating custom PowerPoint report for user {user_id}")
-        xml_data = execute_proc_for_xml(
-            db=self.db,
-            proc_name='usp_generate_monthly_report_xml',
-            params=(user_id,)
-        )
-        return create_custom_presentation_from_xml(xml_string=xml_data)

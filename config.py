@@ -1,4 +1,6 @@
 import logging
+
+from pydantic import EmailStr
 from pydantic_settings import BaseSettings
 from typing import List
 
@@ -15,7 +17,9 @@ class Settings(BaseSettings):
     API_V1_PREFIX: str = "/bu-rpt/v1"
 
     # --- CORS ---
-    ALLOWED_ORIGINS: List[str] = ["*"]
+    ALLOWED_ORIGINS: List[str] = [
+        "https://devproject212.oa.r.appspot.com"
+    ]
 
     # --- Database Connection Pool Settings ---
     DB_SERVER: str
@@ -25,7 +29,7 @@ class Settings(BaseSettings):
     DB_POOL_SIZE: int = 5
 
     # --- Email Settings ---
-    SENDER_EMAIL: str
+    SENDER_EMAIL: EmailStr
     SENDER_PASSWORD: str
 
     class Config:

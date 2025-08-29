@@ -16,7 +16,6 @@ def request_code(
     request: LoginRequest,
     service: AuthService = Depends(get_auth_service)
 ):
-    # Let Pydantic handle validation errors automatically
     try:
         return service.request_login_code(email=request.email)
     except pymssql.Error as e:
