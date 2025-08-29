@@ -1,13 +1,13 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, EmailStr
 from typing import List, Optional
 from datetime import datetime
 
 
 class LoginRequest(BaseModel):
-    email: str = Field(..., example="user@example.com")
+    email: EmailStr = Field(..., example="user@example.com")
 
 class VerifyRequest(BaseModel):
-    email: str = Field(..., example="user@example.com")
+    email: EmailStr = Field(..., example="user@example.com")
     code: str = Field(..., example="123456")
 
 class Permission(BaseModel):

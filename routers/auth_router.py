@@ -15,8 +15,11 @@ def request_code(
     request: LoginRequest,
     service: AuthService = Depends(get_auth_service)
 ):
+    # Let Pydantic handle validation errors automatically
     try:
         return service.request_login_code(email=request.email)
+    except pymssql.Error as e:
+        raise HTTPException(status_code=500, detail="Database error while requesting the login code.")
     except Exception as e:
         raise HTTPException(status_code=500, detail="An internal server error occurred while requesting the login code.")
 

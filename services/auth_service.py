@@ -1,7 +1,7 @@
 import pymssql
-import logging
 import re
 from helpers import send_email
+from config import logger
 
 
 class AuthService:
@@ -40,10 +40,10 @@ class AuthService:
                     self.db.commit()
             
         except pymssql.Error as ex:
-            logging.error(f"Database Service Error in request_login_code: {ex}")
+            logger.error(f"Database Service Error in request_login_code: {ex}")
             raise
         except Exception as e:
-            logging.error(f"Service layer error in request_login_code: {e}")
+            logger.error(f"Service layer error in request_login_code: {e}")
             raise
                 
         return {"message": "A login code has been sent to your email. Please check your inbox."}
@@ -81,5 +81,5 @@ class AuthService:
                 else:
                     return {"user_id": 0, "status": "failed", "message": "Invalid or expired login code."}
         except pymssql.Error as ex:
-            logging.error(f"Database Service Error in verify_login_and_get_user: {ex}")
+            logger.error(f"Database Service Error in verify_login_and_get_user: {ex}")
             raise

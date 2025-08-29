@@ -1,32 +1,25 @@
 import smtplib
-import logging
-import pymssql
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from config import settings
-
-import pymssql
+from config import settings, logger
 import io
-import math
 import xml.etree.ElementTree as ET
 from pptx import Presentation
 from pptx.util import Inches, Pt
 from pptx.enum.text import MSO_AUTO_SIZE
 from pptx.dml.color import RGBColor
-from datetime import datetime
 
 
-def update_items_from_xml(db: pymssql.Connection, table_name: str, xml_string: str, user_id: int, item_name: str):
+def update_items_from_xml(db, table_name: str, xml_string: str, user_id: int, item_name: str):
     try:
-        with db.cursor(as_dict=True) as cursor:
+        with db.cursor() as cursor:
             sql_command = "EXEC usp_bulk_update @tableName=%s, @xmlText=%s, @userID=%d"
             cursor.execute(sql_command, (table_name, xml_string, user_id))
-            
             result = cursor.fetchone()
-            affected_rows = result.get('AffectedRowCount', 0) if result else 0
+            affected_rows = result[0] if result else 0
 
         db.commit()
-        
+
         if affected_rows > 0:
             message = f"Data processed for '{item_name}'. {affected_rows} row(s) were updated."
         else:
@@ -37,24 +30,21 @@ def update_items_from_xml(db: pymssql.Connection, table_name: str, xml_string: s
             "message": message,
             "affected_rows": affected_rows
         }
-    
-    except pymssql.Error as ex:
-        logging.error(f"Database Service Error in update_items_from_xml: {ex}")
-        raise
+
     except Exception as e:
-        logging.error(f"Generic Service Error in update_items_from_xml: {e}")
+        logger.error(f"Generic Service Error in update_items_from_xml: {e}")
         raise
 
-def fetch_data(db: pymssql.Connection, proc_name: str, params: tuple = ()):
+def fetch_data(db, proc_name: str, params: tuple = ()):
     rows = []
     try:
-        with db.cursor(as_dict=True) as cursor:
+        with db.cursor() as cursor:
             cursor.callproc(proc_name, params)
             rows = cursor.fetchall()
-    except pymssql.Error as ex:
-        logging.error(f"Database Helper Error in fetch_data for '{proc_name}': {ex}")
+    except Exception as ex:
+        logger.error(f"Database Helper Error in fetch_data for '{proc_name}': {ex}")
         raise
-    
+
     return rows
 
 def send_email(to_email: str, subject: str, html_content: str):
@@ -74,16 +64,16 @@ def send_email(to_email: str, subject: str, html_content: str):
             server.sendmail(
                 sender_email, to_email, message.as_string()
             )
-            logging.info(f"Email sent successfully to {to_email}.")
+            logger.info(f"Email sent successfully to {to_email}.")
             return True
-            
+
     except smtplib.SMTPAuthenticationError:
-        logging.error("Failed to send email: SMTP Authentication failed. Check SENDER_EMAIL/SENDER_PASSWORD.")
+        logger.error("Failed to send email: SMTP Authentication failed. Check SENDER_EMAIL/SENDER_PASSWORD.")
         return False
     except Exception as e:
-        logging.error(f"An unexpected error occurred while sending email: {e}")
+        logger.error(f"An unexpected error occurred while sending email: {e}")
         return False
-    
+
 
 # --- Configuration Constants (Powerpoint presentation)---
 SLIDE_WIDTH = Inches(13.33)
@@ -127,14 +117,14 @@ def create_custom_presentation_from_xml(xml_string: str) -> io.BytesIO:
 
         for result in root.findall('Result'):
             result_name = result.get('name')
-            
+
             # Process Page 1
             page1 = result.find(".//Page[@number='1']")
             if page1 is not None:
                 slide = prs.slides.add_slide(blank_slide_layout)
                 title_text = page1.find('Title').text if page1.find('Title') is not None and page1.find('Title').text else result_name
                 add_slide_title(slide, title_text)
-                
+
                 current_y = TOP_MARGIN + Inches(0.4)
                 left_x = LEFT_MARGIN
                 right_x = left_x + LEFT_COLUMN_WIDTH + COLUMN_SPACING
@@ -146,7 +136,7 @@ def create_custom_presentation_from_xml(xml_string: str) -> io.BytesIO:
                     left_y = add_section_title(slide, left_x, left_y, "Performance")
                     for table in performance.findall('Table'):
                         left_y = add_generic_table(slide, table, left_x, left_y, LEFT_COLUMN_WIDTH)
-                
+
                 left_y = add_combined_section(slide, page1, left_x, left_y, LEFT_COLUMN_WIDTH)
 
                 # Right Column Processing
@@ -167,7 +157,7 @@ def create_custom_presentation_from_xml(xml_string: str) -> io.BytesIO:
                 slide = prs.slides.add_slide(blank_slide_layout)
                 title_text = page2.find('Title').text if page2.find('Title') is not None and page2.find('Title').text else f"{result_name} - Priorities"
                 add_slide_title(slide, title_text)
-                
+
                 current_y = TOP_MARGIN + Inches(0.8)
                 priorities = page2.find('Priorities/Table')
                 if priorities is not None:
@@ -180,7 +170,7 @@ def create_custom_presentation_from_xml(xml_string: str) -> io.BytesIO:
         return ppt_stream
 
     except Exception as e:
-        logging.error(f"Failed to build custom PowerPoint from XML: {e}", exc_info=True)
+        logger.error(f"Failed to build custom PowerPoint from XML: {e}", exc_info=True)
         raise
 
 def add_slide_title(slide, text):
@@ -208,7 +198,7 @@ def add_generic_table(slide, table_xml, x, y, width):
     headers_xml = table_xml.find('Header')
     cols_xml = headers_xml.findall('Column') if headers_xml is not None else table_xml.findall('Column')
     headers = [col.text for col in cols_xml]
-    
+
     rows_data = []
     for row in table_xml.findall('Row'):
         cell_data = [cell.text if cell.text is not None else "" for cell in row.findall('Cell')]
@@ -237,14 +227,14 @@ def add_generic_table(slide, table_xml, x, y, width):
             p = cell.text_frame.paragraphs[0]
             p.font.size = TABLE_CELL_FONT_SIZE
             p.font.color.rgb = TABLE_CELL_FONT_COLOR
-    
+
     autofit_table_rows(table)
     return y + table_shape.height + SECTION_SPACING
 
 def add_combined_section(slide, page, x, y, width):
     sections = {'Highlights': 'Highlights', 'Challenges': 'Challenges', 'Opportunities': 'Opportunities'}
     has_content = False
-    
+
     textbox = slide.shapes.add_textbox(x, y, width, Inches(0.1))
     tf = textbox.text_frame
     tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
@@ -262,7 +252,7 @@ def add_combined_section(slide, page, x, y, width):
                 p.font.bold = SUBSECTION_FONT_BOLD
                 p.font.color.rgb = SUBSECTION_FONT_COLOR
                 p.space_after = SUBSECTION_SPACING
-                
+
                 for kp_text in key_points:
                     p = tf.add_paragraph()
                     p.text = "• " + kp_text
@@ -273,7 +263,7 @@ def add_combined_section(slide, page, x, y, width):
     if not has_content:
         slide.shapes.element.remove(textbox.element)
         return y
-    
+
     return y + textbox.height + SECTION_SPACING
 
 def autofit_table_rows(table):
@@ -289,3 +279,18 @@ def autofit_table_rows(table):
         row.height = max_h
     for i, width in enumerate(col_widths):
         table.columns[i].width = width
+
+def execute_proc_for_xml(db, proc_name: str, params: tuple = ()):
+    try:
+        with db.cursor() as cursor:
+            cursor.callproc(proc_name, params)
+            result = cursor.fetchone()
+            if result and len(result) > 0:
+                # Assume the first column contains the XML string
+                return result[0]
+            else:
+                logger.error(f"No XML data returned from procedure '{proc_name}'")
+                return ""
+    except Exception as e:
+        logger.error(f"Generic Service Error in execute_proc_for_xml: {e}")
+        raise
