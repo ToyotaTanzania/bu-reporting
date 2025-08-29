@@ -4,7 +4,7 @@ from datetime import datetime
 
 
 class LoginRequest(BaseModel):
-    email: EmailStr
+    email: str
 
     class Config:
         json_schema_extra = {
@@ -12,7 +12,7 @@ class LoginRequest(BaseModel):
         }
 
 class VerifyRequest(BaseModel):
-    email: EmailStr
+    email: str
     code: str
 
     class Config:

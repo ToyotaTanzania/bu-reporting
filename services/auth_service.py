@@ -1,8 +1,6 @@
 import pymssql
 import re
 
-from pydantic import EmailStr
-
 from helpers import send_email
 from config import logger
 
@@ -11,14 +9,14 @@ class AuthService:
     def __init__(self, db: pymssql.Connection):
         self.db = db
 
-    def request_login_code(self, email: EmailStr):
+    def request_login_code(self, email: str):
         email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-        if not re.match(email_regex, str(email)):
+        if not re.match(email_regex, email):
             raise ValueError("Invalid email provided.")
         
         try:
             with self.db.cursor(as_dict=True) as cursor:
-                cursor.callproc('usp_generate_login_code', (str(email),))
+                cursor.callproc('usp_generate_login_code', (email,))
                 result = cursor.fetchone()
 
                 if result and result.get('login_code'):
@@ -51,10 +49,10 @@ class AuthService:
                 
         return {"message": "A login code has been sent to your email. Please check your inbox."}
 
-    def verify_login_and_get_user(self, email: EmailStr, code: str):
+    def verify_login_and_get_user(self, email: str, code: str):
         try:
             with self.db.cursor(as_dict=True) as cursor:
-                cursor.callproc('usp_verify_login_code', (str(email), code))
+                cursor.callproc('usp_verify_login_code', (email, code))
                 user_data = cursor.fetchone()
                 
                 if user_data and user_data.get('user_id') > 0:
