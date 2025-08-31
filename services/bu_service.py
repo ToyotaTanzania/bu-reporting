@@ -30,8 +30,7 @@ class ReportingService:
         logger.info(f"Fetching overdues for user {user_id}")
         return fetch_data(db=self.db, proc_name="usp_get_ops_overdues", params=(user_id,))
 
-
-    def create_monthly_presentation(self, user_id: int):
+    def fetch_monthly_presentation(self, user_id: int):
         logger.info(f"Initiating custom PowerPoint report for user {user_id}")
         xml_data = execute_proc_for_xml(
             db=self.db,
