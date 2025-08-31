@@ -1,15 +1,16 @@
-from pydantic import BaseModel, Field, EmailStr
+from pydantic import BaseModel, EmailStr
 from typing import List, Optional
 from datetime import datetime
 
 
 class LoginRequest(BaseModel):
-    email: str
+    email: EmailStr
 
     class Config:
         json_schema_extra = {
             "example": {"email": "user@example.com"}
         }
+
 
 class VerifyRequest(BaseModel):
     email: str

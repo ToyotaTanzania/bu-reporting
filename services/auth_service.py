@@ -3,6 +3,7 @@ import re
 
 from helpers import send_email
 from config import logger
+from fastapi import HTTPException
 
 
 class AuthService:
@@ -10,9 +11,8 @@ class AuthService:
         self.db = db
 
     def request_login_code(self, email: str):
-        email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-        if not re.match(email_regex, email):
-            raise ValueError("Invalid email provided.")
+        if not re.match(r"^[\w\.-]+@[\w\.-]+\.\w+$", email):
+            raise HTTPException(status_code=422, detail="Invalid email format")
         
         try:
             with self.db.cursor(as_dict=True) as cursor:
