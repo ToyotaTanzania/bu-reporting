@@ -43,7 +43,7 @@ def update_items_from_xml(db, table_name: str, xml_string: str, user_id: int, it
 def fetch_data(db, proc_name: str, params: tuple = ()):
     rows = []
     try:
-        with db.cursor() as cursor:
+        with db.cursor(as_dict=True) as cursor:
             cursor.callproc(proc_name, params)
             rows = cursor.fetchall()
     except Exception as ex:
