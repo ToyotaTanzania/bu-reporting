@@ -23,7 +23,7 @@ def set_reporting_period(
         raise HTTPException(status_code=401, detail="Unauthorized: User ID is missing.")
 
     try:
-        return service.set_report_period(
+        return service.set_reporting_period(
             year=request.year,
             month=request.month,
             user_id=x_user_id
