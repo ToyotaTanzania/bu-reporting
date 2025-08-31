@@ -32,6 +32,7 @@ class ReportingService:
 
     def fetch_monthly_presentation(self, user_id: int):
         logger.info(f"Initiating custom PowerPoint report for user {user_id}")
+        xml_data = "<root></root>"
         xml_data = execute_proc_for_xml(
             db=self.db,
             proc_name='usp_generate_monthly_report_xml',

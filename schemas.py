@@ -60,6 +60,7 @@ class LoginFailedResponse(BaseModel):
 class SetPeriodRequest(BaseModel):
     year: int
     month: int
+    user_id: Optional[int] = None
 
     class Config:
         json_schema_extra = {

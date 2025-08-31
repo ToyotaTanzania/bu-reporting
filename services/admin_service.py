@@ -16,16 +16,36 @@ class AdminService:
         try:
             with self.db.cursor(as_dict=True) as cursor:
                 cursor.callproc('usp_close_reporting_period', (user_id,))
-
                 result = cursor.fetchone()
 
             self.db.commit()
 
-            if result:
+            if result and "status" in result:
                 return result
             else:
                 raise Exception("The stored procedure did not return a status message.")
 
         except pymssql.Error as ex:
             logger.error(f"Database error while closing report period for user {user_id}: {ex}")
+            raise
+        except Exception as e:
+            logger.error(f"Error in close_reporting_period: {e}")
+            raise
+
+    def set_reporting_period(self, year: int, month: int, user_id: int):
+        logger.info(f"Setting reporting period to {year}/{month} for user {user_id}")
+        try:
+            with self.db.cursor(as_dict=True) as cursor:
+                cursor.callproc('usp_set_report_period', (year, month, user_id))
+                result = cursor.fetchone()
+            self.db.commit()
+            if result and "status" in result:
+                return result
+            else:
+                raise Exception("The stored procedure did not return a status message.")
+        except pymssql.Error as ex:
+            logger.error(f"Database error while setting reporting period for user {user_id}: {ex}")
+            raise
+        except Exception as e:
+            logger.error(f"Error in set_reporting_period: {e}")
             raise

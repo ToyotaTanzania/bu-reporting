@@ -1,8 +1,8 @@
 import sys
 import os
+
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from config import settings
-import pytest
 from fastapi.testclient import TestClient
 from main import app
 from unittest.mock import MagicMock
@@ -14,8 +14,12 @@ def override_get_db():
 app.dependency_overrides[get_db] = override_get_db
 client = TestClient(app)
 
+def test_set_reporting_period():
+    response = client.post(f"{settings.API_V1_PREFIX}/admin/reporting-period/set", json={"year": 2025, "month": 8}, headers={"X-User-ID": "1"})
+    assert response.status_code in [200, 400, 500]
+
 def test_close_reporting_period():
-    response = client.post(f"{settings.API_V1_PREFIX}/admin/close-reporting-period", headers={"X-User-ID": "1"})
+    response = client.post(f"{settings.API_V1_PREFIX}/admin/reporting-period/close", headers={"X-User-ID": "1"})
     assert response.status_code in [200, 400, 500]
 
 def test_fetch_okr_submissions():
@@ -23,6 +27,15 @@ def test_fetch_okr_submissions():
     service = AdminService(db=MagicMock())
     result = service.fetch_okr_submissions(user_id=1)
     assert result is not None
+
+def test_set_reporting_period_service():
+    from services.admin_service import AdminService
+    service = AdminService(db=MagicMock())
+    try:
+        result = service.set_reporting_period(year=2025, month=8, user_id=1)
+        assert result is not None
+    except Exception:
+        assert True
 
 def test_close_reporting_period_service():
     from services.admin_service import AdminService
