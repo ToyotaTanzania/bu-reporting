@@ -1,5 +1,6 @@
 import math
 import smtplib
+import ssl
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
@@ -51,7 +52,7 @@ def fetch_data(db, proc_name: str, params: tuple = ()):
 
     return rows
 
-def send_email(to_email: str, subject: str, html_content: str):
+def send_email(to_email: str, subject: str, html_content: str) -> bool:
     sender_email = settings.SENDER_EMAIL
     sender_password = settings.SENDER_PASSWORD
 
@@ -61,9 +62,11 @@ def send_email(to_email: str, subject: str, html_content: str):
     message["To"] = to_email
     message.attach(MIMEText(html_content, "html"))
 
+    context = ssl.create_default_context()
+
     try:
-        with smtplib.SMTP("smtp.office365.com", 587) as server:
-            server.starttls()
+        with smtplib.SMTP("smtp.office365.com", 587, timeout=10) as server:
+            server.starttls(context=context)
             server.login(sender_email, sender_password)
             server.sendmail(
                 sender_email, to_email, message.as_string()
@@ -72,10 +75,13 @@ def send_email(to_email: str, subject: str, html_content: str):
             return True
 
     except smtplib.SMTPAuthenticationError:
-        logger.error("Failed to send email: SMTP Authentication failed. Check SENDER_EMAIL/SENDER_PASSWORD.")
+        logger.error(
+            "SMTP Authentication failed. Check SENDER_EMAIL/SENDER_PASSWORD. "
+            "If MFA is enabled, an 'App Password' is required."
+        )
         return False
     except Exception as e:
-        logger.error(f"An unexpected error occurred while sending email: {e}")
+        logger.error(f"An unexpected error occurred while sending email: {e}", exc_info=True)
         return False
 
 
