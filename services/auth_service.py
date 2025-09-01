@@ -3,7 +3,6 @@ import re
 
 from helpers import send_email
 from config import logger
-from fastapi import HTTPException
 
 
 class AuthService:
@@ -11,8 +10,9 @@ class AuthService:
         self.db = db
 
     def request_login_code(self, email: str):
-        if not re.match(r"^[\w\.-]+@[\w\.-]+\.\w+$", email):
-            raise HTTPException(status_code=422, detail="Invalid email format")
+        email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        if not re.match(email_regex, email):
+            raise ValueError("Invalid email format provided.")
         
         try:
             with self.db.cursor(as_dict=True) as cursor:
@@ -39,15 +39,17 @@ class AuthService:
                         raise Exception("Failed to send the login code email.")
                     
                     self.db.commit()
-            
+
+                    return {"message": "A login code has been sent to your email. Please check your inbox."}
+                else:
+                    return {"message": "Failed to generate a login code. Email not found."}
+
         except pymssql.Error as ex:
             logger.error(f"Database Service Error in request_login_code: {ex}")
             raise
         except Exception as e:
             logger.error(f"Service layer error in request_login_code: {e}")
             raise
-                
-        return {"message": "A login code has been sent to your email. Please check your inbox."}
 
     def verify_login_and_get_user(self, email: str, code: str):
         try:
