@@ -22,7 +22,7 @@ class AuthService:
                 cursor.callproc('usp_generate_login_code', (email,))
                 result = cursor.fetchone()
 
-                if not result:
+                if result.get('login_code') is None:
                     logger.warning(f"Email not found in database: {email}")
                     raise EmailNotFoundError("Email not found.")
 
