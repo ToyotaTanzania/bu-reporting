@@ -59,7 +59,22 @@ def test_reporting_service_methods():
     assert service.fetch_overdues(1) == []
     assert service.fetch_monthly_presentation(1) == {}
 
+
 def test_get_okrs_missing_header():
     response = client.get(f"{settings.API_V1_PREFIX}/okrs")
+    assert response.status_code == 400
+    assert "X-User-ID" in response.json()["detail"]
+
+def test_bulk_update_okrs_missing_header():
+    response = client.put(f"{settings.API_V1_PREFIX}/okrs/bulk-update", data="<root></root>")
+    assert response.status_code == 400
+    assert "X-User-ID" in response.json()["detail"]
+
+def test_bulk_update_okrs_invalid_xml():
+    response = client.put(f"{settings.API_V1_PREFIX}/okrs/bulk-update", data="not-xml", headers={"X-User-ID": "1"})
+    assert response.status_code in [400, 500]
+
+def test_get_commentaries_missing_header():
+    response = client.get(f"{settings.API_V1_PREFIX}/commentaries")
     assert response.status_code == 400
     assert "X-User-ID" in response.json()["detail"]

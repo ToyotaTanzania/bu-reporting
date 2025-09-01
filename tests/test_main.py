@@ -15,12 +15,21 @@ app.dependency_overrides[get_db] = override_get_db
 
 client = TestClient(app)
 
+
 def test_health_check():
     response = client.get("/health")
     assert response.status_code == 200
     assert response.json() == {"status": "ok"}
 
+def test_health_check_wrong_method():
+    response = client.post("/health")
+    assert response.status_code == 405
+
 def test_root():
     response = client.get("/")
     assert response.status_code == 200
     assert "Welcome" in response.json()["message"]
+
+def test_nonexistent_route():
+    response = client.get("/does-not-exist")
+    assert response.status_code == 404
