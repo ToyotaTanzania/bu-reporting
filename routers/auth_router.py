@@ -24,9 +24,9 @@ def request_code(
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except pymssql.Error as e:
-        raise HTTPException(status_code=500, detail="A database error occurred while requesting the login code.")
+        raise HTTPException(status_code=500, detail=f"A database error occurred while requesting the login code. {e}")
     except Exception as e:
-        raise HTTPException(status_code=500, detail="An internal server error occurred while requesting the login code.")
+        raise HTTPException(status_code=500, detail=f"An internal server error occurred while requesting the login code. {e}")
 
 @router.post("/verify-code", response_model=Union[LoginSuccessResponse, LoginFailedResponse])
 def verify_code(
