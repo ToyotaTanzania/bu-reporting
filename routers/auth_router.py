@@ -13,12 +13,12 @@ def get_auth_service(db: pymssql.Connection = Depends(get_db)) -> AuthService:
     return AuthService(db=db)
 
 @router.post("/request-code")
-async def request_code(
+def request_code(
     request: LoginRequest,
     service: AuthService = Depends(get_auth_service)
 ):
     try:
-        return await service.request_login_code(email=request.email)
+        return service.request_login_code(email=request.email)
     except EmailNotFoundError as e:
         raise HTTPException(status_code=404, detail=str(e))
     except ValueError as e:
@@ -29,12 +29,12 @@ async def request_code(
         raise HTTPException(status_code=500, detail="An internal server error occurred while requesting the login code.")
 
 @router.post("/verify-code", response_model=Union[LoginSuccessResponse, LoginFailedResponse])
-async def verify_code(
+def verify_code(
     request: VerifyRequest,
     service: AuthService = Depends(get_auth_service)
 ):
     try:
-        return await service.verify_login_and_get_user(email=request.email, code=request.code)
+        return service.verify_login_and_get_user(email=request.email, code=request.code)
     except EmailNotFoundError as e:
         raise HTTPException(status_code=404, detail=str(e))
     except InvalidLoginCodeError as e:
