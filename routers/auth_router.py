@@ -40,6 +40,6 @@ def verify_code(
     except InvalidLoginCodeError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except pymssql.Error as e:
-        raise HTTPException(status_code=500, detail="A database error occurred during verification.")
+        raise HTTPException(status_code=500, detail=f"A database error occurred during verification. {e}")
     except Exception as e:
-        raise HTTPException(status_code=500, detail="An internal server error occurred during verification.")
+        raise HTTPException(status_code=500, detail=f"An internal server error occurred during verification. {e}")
