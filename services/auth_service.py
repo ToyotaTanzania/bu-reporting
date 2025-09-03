@@ -68,8 +68,8 @@ class AuthService:
                 user_data = cursor.fetchone()
 
                 if not user_data:
-                    logger.warning(f"Email not found in database during login attempt: {email}")
-                    raise EmailNotFoundError("Email not found.")
+                    logger.warning(f"Email not found or user is not active during login attempt: {email}")
+                    raise EmailNotFoundError("Email not found or user is not active.")
 
                 if user_data.get('user_id', 0) <= 0:
                     logger.warning(f"Invalid or expired login code for email: {email}")
