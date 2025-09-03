@@ -6,7 +6,7 @@ class LogService:
     def __init__(self, db: pymssql.Connection):
         self.db = db
 
-    def create_log_entry(self, level: str, message: str, module_name: str, user_id: int):
+    def create_log_entry(self, level: str, message: str, module_name: str, user_id: int, client_ip: str):
         try:
             with self.db.cursor() as cursor:
                 params = (level, message, module_name, user_id)
