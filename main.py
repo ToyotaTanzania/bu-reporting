@@ -59,7 +59,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 app.include_router(bu_router, prefix=settings.API_V1_PREFIX, tags=["Reporting"])
 app.include_router(auth_router, prefix=f"{settings.API_V1_PREFIX}/auth", tags=["Authentication"])
 app.include_router(admin_router, prefix=f"{settings.API_V1_PREFIX}/admin", tags=["Admin"])
-app.include_router(log_router, prefix=f"{settings.API_V1_PREFIX}/logs", tags=["Logging"])
+app.include_router(log_router, prefix=settings.API_V1_PREFIX, tags=["Logging"])
 
 # --- Health Check Endpoint ---
 @app.get("/health", tags=["Health"])

@@ -11,7 +11,7 @@ router = APIRouter()
 def get_log_service(db: pymssql.Connection = Depends(get_db)):
     return LogService(db=db)
 
-@router.post("/logs", summary="Add a log entry")
+@router.post("/logs")
 def add_log_entry(
     request: LogRequest,
     x_user_id: Optional[int] = Header(None),
