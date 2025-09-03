@@ -4,7 +4,7 @@ import re
 
 from helpers import send_email
 from config import logger
-from exceptions import EmailNotFoundError, InvalidLoginCodeError
+from exceptions import EmailNotFoundError, InvalidLoginCodeError, UserNotActiveError
 
 
 class AuthService:
@@ -23,7 +23,7 @@ class AuthService:
                 result = cursor.fetchone()
                 if result is None or result.get('login_code') is None:
                     logger.warning(f"Email not found in database: {email}")
-                    raise EmailNotFoundError("Email not found.")
+                    raise EmailNotFoundError("Email not found or user is not active.")
                 if not result.get('login_code'):
                     logger.error(f"No login code generated for email: {email}")
                     raise Exception("Failed to generate login code.")
@@ -64,9 +64,13 @@ class AuthService:
                 cursor.callproc('usp_verify_login_code', (email, code))
                 user_data = cursor.fetchone()
 
-                if not user_data:
-                    logger.warning(f"Email not found or user is not active during login attempt: {email}")
-                    raise EmailNotFoundError("Email not found or user is not active.")
+                if user_data is None:
+                    logger.warning(f"Email not found during login attempt: {email}")
+                    raise EmailNotFoundError("Email not found.")
+
+                if not user_data.get('is_active', False):
+                    logger.warning(f"User is not active during login attempt: {email}")
+                    raise UserNotActiveError("User is not active.")
 
                 if user_data.get('user_id', 0) <= 0:
                     logger.warning(f"Invalid or expired login code for email: {email}")

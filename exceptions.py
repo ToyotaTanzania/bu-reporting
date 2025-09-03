@@ -3,3 +3,6 @@ class EmailNotFoundError(Exception):
 
 class InvalidLoginCodeError(Exception):
     pass
+
+class UserNotActiveError(Exception):
+    pass
