@@ -21,13 +21,16 @@ def add_log_entry(
     if x_user_id is None:
         return {"status": "failed", "message": "User ID is missing"}
 
-    client_ip = request.client.host
+    client_ip = request.headers.get("x-forwarded-for")
+    if client_ip:
+        client_ip = client_ip.split(',')[0].strip()
+    else:
+        client_ip = request.client.host
 
-    result = service.create_log_entry(
+    return service.create_log_entry(
         level=request_data.level,
         message=request_data.message,
         module_name=request_data.module_name or "general",
         user_id=x_user_id,
         client_ip=client_ip
     )
-    return result
