@@ -66,3 +66,13 @@ class SetPeriodRequest(BaseModel):
         json_schema_extra = {
             "example": {"year": 2025, "month": 9}
         }
+
+class LogRequest(BaseModel):
+    level: str
+    message: str
+    module_name: Optional[str] = None
+
+    class Config:
+        json_schema_extra = {
+            "example": {"level": "info", "message": "This is a log message", "module_name": "auth"}
+        }

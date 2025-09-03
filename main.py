@@ -6,6 +6,7 @@ from config import settings, logger
 from routers.bu_router import router as bu_router
 from routers.auth_router import router as auth_router
 from routers.admin_router import router as admin_router
+from routers.log_router import router as log_router
 from database import initialize_pool, close_pool
 from fastapi.responses import JSONResponse
 from fastapi.requests import Request
@@ -58,6 +59,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 app.include_router(bu_router, prefix=settings.API_V1_PREFIX, tags=["Reporting"])
 app.include_router(auth_router, prefix=f"{settings.API_V1_PREFIX}/auth", tags=["Authentication"])
 app.include_router(admin_router, prefix=f"{settings.API_V1_PREFIX}/admin", tags=["Admin"])
+app.include_router(log_router, prefix=f"{settings.API_V1_PREFIX}/logs", tags=["Logging"])
 
 # --- Health Check Endpoint ---
 @app.get("/health", tags=["Health"])
