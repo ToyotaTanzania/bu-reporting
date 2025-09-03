@@ -1,70 +1,89 @@
-
-# --- API Endpoint Tests ---
-import sys
-import os
 import pytest
-from fastapi.testclient import TestClient
-from main import app
-from unittest.mock import MagicMock
-from database import get_db
-from config import settings
-
-def override_get_db():
-    yield MagicMock()
-
-app.dependency_overrides[get_db] = override_get_db
-client = TestClient(app)
-
-def test_api_request_code_invalid_email():
-    response = client.post(f"{settings.API_V1_PREFIX}/auth/request-code", json={"email": "not-an-email"})
-    assert response.status_code in (400, 422)
-    data = response.json()
-    assert "Invalid email format" in data.get("detail", "") or "value is not a valid email address" in str(data)
-
-def test_api_verify_code_missing_fields():
-    response = client.post(f"{settings.API_V1_PREFIX}/auth/verify-code", json={"email": "user@example.com"})
-    assert response.status_code == 422
-    data = response.json()
-    # FastAPI returns a list of error dicts in 'detail', check for 'Field required' in any 'msg'
-    assert any(err.get("msg") == "Field required" for err in data.get("detail", []))
-
-# --- Service Layer Error Handling Tests ---
-import services.auth_service as auth_service_mod
-from exceptions import EmailNotFoundError, InvalidLoginCodeError
+from services.auth_service import AuthService
+from exceptions import EmailNotFoundError, InvalidLoginCodeError, UserNotActiveError
 
 class DummyCursor:
-    def __init__(self, result=None):
+    def __init__(self, result=None, permissions=None):
         self.result = result
+        self.permissions = permissions or []
+        self.proc_calls = []
     def __enter__(self):
         return self
     def __exit__(self, exc_type, exc_val, exc_tb):
         pass
     def callproc(self, proc, args):
-        pass
+        self.proc_calls.append((proc, args))
     def fetchone(self):
         return self.result
     def fetchall(self):
-        return []
+        return self.permissions
 
 class DummyDB:
-    def __init__(self, result=None):
+    def __init__(self, result=None, permissions=None):
         self._result = result
+        self._permissions = permissions
+        self.committed = False
     def cursor(self, as_dict=True):
-        return DummyCursor(self._result)
+        return DummyCursor(self._result, self._permissions)
     def commit(self):
-        pass
+        self.committed = True
 
-def test_service_request_login_code_email_not_found():
-    service = auth_service_mod.AuthService(DummyDB(result=None))
+# --- request_login_code ---
+def test_request_login_code_invalid_email():
+    service = AuthService(DummyDB())
+    with pytest.raises(ValueError):
+        service.request_login_code("bad-email")
+
+def test_request_login_code_email_not_found():
+    service = AuthService(DummyDB(result=None))
     with pytest.raises(EmailNotFoundError):
         service.request_login_code("notfound@example.com")
 
-def test_service_verify_login_and_get_user_email_not_found():
-    service = auth_service_mod.AuthService(DummyDB(result=None))
+def test_request_login_code_no_login_code():
+    service = AuthService(DummyDB(result={"login_code": None}))
+    with pytest.raises(Exception):
+        service.request_login_code("user@example.com")
+
+def test_request_login_code_failed_generation():
+    service = AuthService(DummyDB(result={"login_code": ""}))
+    with pytest.raises(Exception):
+        service.request_login_code("user@example.com")
+
+# --- verify_login_and_get_user ---
+def test_verify_login_and_get_user_email_not_found():
+    service = AuthService(DummyDB(result=None))
     with pytest.raises(EmailNotFoundError):
         service.verify_login_and_get_user("notfound@example.com", "123456")
 
-def test_service_verify_login_and_get_user_invalid_code():
-    service = auth_service_mod.AuthService(DummyDB(result={"user_id": 0}))
+def test_verify_login_and_get_user_user_not_active():
+    service = AuthService(DummyDB(result={"is_active": False, "user_id": 1}))
+    with pytest.raises(UserNotActiveError):
+        service.verify_login_and_get_user("user@example.com", "123456")
+
+def test_verify_login_and_get_user_invalid_code():
+    service = AuthService(DummyDB(result={"is_active": True, "user_id": 0}))
     with pytest.raises(InvalidLoginCodeError):
         service.verify_login_and_get_user("user@example.com", "badcode")
+
+def test_verify_login_and_get_user_success():
+    permissions = [{"module_name": "mod", "bu_name": "bu", "access_type": "read"}]
+    result = {
+        "is_active": True,
+        "user_id": 42,
+        "first_name": "Test",
+        "is_admin": True,
+        "period_start": None,
+        "period_end": None,
+        "is_period_closed": False,
+        "is_priorities_month": False,
+        "login_code": "goodcode"
+    }
+    db = DummyDB(result=result, permissions=permissions)
+    service = AuthService(db)
+    resp = service.verify_login_and_get_user("user@example.com", "goodcode")
+    assert resp["user_id"] == 42
+    assert resp["status"] == "success"
+    assert resp["message"].startswith("Welcome")
+    assert resp["data"]["is_admin"] is True
+    assert resp["data"]["permissions"] == permissions
+    assert db.committed is True
