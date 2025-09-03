@@ -21,15 +21,12 @@ class AuthService:
             with self.db.cursor(as_dict=True) as cursor:
                 cursor.callproc('usp_generate_login_code', (email,))
                 result = cursor.fetchone()
-
-                if result.get('login_code') is None:
+                if result is None or result.get('login_code') is None:
                     logger.warning(f"Email not found in database: {email}")
                     raise EmailNotFoundError("Email not found.")
-
                 if not result.get('login_code'):
                     logger.error(f"No login code generated for email: {email}")
                     raise Exception("Failed to generate login code.")
-
                 login_code = result['login_code']
                 email_subject = "Your One-Time Login Code"
                 email_body = f"""
