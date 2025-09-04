@@ -9,7 +9,7 @@ class LogService:
     def create_log_entry(self, level: str, message: str, module_name: str, user_id: int, client_ip: str):
         try:
             with self.db.cursor() as cursor:
-                params = (level, message, module_name, user_id)
+                params = (level, message, module_name, user_id, client_ip)
                 cursor.callproc('usp_insert_app_log', params)
             self.db.commit()
             return {"status": "success"}
