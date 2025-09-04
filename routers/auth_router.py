@@ -19,10 +19,10 @@ def request_code(
 ):
     try:
         return service.request_login_code(email=request.email)
-    except EmailNotFoundError as e:
-        raise HTTPException(status_code=404, detail=str(e))
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+    except EmailNotFoundError as e:
+        raise HTTPException(status_code=404, detail=str(e))
     except UserNotActiveError as e:
         raise HTTPException(status_code=403, detail=str(e))
     except pymssql.Error as e:
@@ -37,6 +37,8 @@ def verify_code(
 ):
     try:
         return service.verify_login_and_get_user(email=request.email, code=request.code)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     except EmailNotFoundError as e:
         raise HTTPException(status_code=404, detail=str(e))
     except UserNotActiveError as e:

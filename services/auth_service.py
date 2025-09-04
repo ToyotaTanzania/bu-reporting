@@ -64,6 +64,11 @@ class AuthService:
 
 
     def verify_login_and_get_user(self, email: str, code: str) -> dict:
+        email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        if not re.match(email_regex, email):
+            logger.warning(f"Invalid email format attempted: {email}")
+            raise ValueError("Invalid email format provided.")
+        
         try:
             with self.db.cursor(as_dict=True) as cursor:
                 cursor.callproc('usp_verify_login_code', (email, code))
