@@ -22,17 +22,13 @@ class AuthService:
                 cursor.callproc('usp_generate_login_code', (email,))
                 result = cursor.fetchone()
 
-                if result is None:
-                    logger.warning(f"Email not found in database: {email}")
+                if result is None or result.get('user_id', 0) <= 0:
+                    logger.warning(f"Email not found during login attempt: {email}")
                     raise EmailNotFoundError("Email not found.")
 
-                if result.get('is_active', 0) == 0:
-                    logger.warning(f"User is not active: {email}")
+                if not result.get('is_active', False):
+                    logger.warning(f"User is not active during login attempt: {email}")
                     raise UserNotActiveError("User is not active.")
-
-                if result.get('is_active', 0) > 0 and not result.get('login_code'):
-                    logger.error(f"No login code generated for email: {email}")
-                    raise Exception("Failed to generate login code.")
                 
                 login_code = result['login_code']
                 minutes_to_expire = result['minutes_to_expire']
@@ -73,15 +69,15 @@ class AuthService:
                 cursor.callproc('usp_verify_login_code', (email, code))
                 user_data = cursor.fetchone()
 
-                if user_data is None:
+                if user_data is None or user_data.get('user_id', 0) <= 0:
                     logger.warning(f"Email not found during login attempt: {email}")
                     raise EmailNotFoundError("Email not found.")
 
-                if user_data.get('user_id', 0) > 0 and user_data.get('login_code') is None:
+                if not user_data.get('is_active', False):
                     logger.warning(f"User is not active during login attempt: {email}")
                     raise UserNotActiveError("User is not active.")
 
-                if user_data.get('user_id', 0) <= 0:
+                if not user_data.get('login_code') or user_data.get('login_code') != code:
                     logger.warning(f"Invalid or expired login code for email: {email}")
                     raise InvalidLoginCodeError("Invalid or expired login code.")
 

@@ -61,9 +61,10 @@ def test_verify_login_and_get_user_user_not_active():
         service.verify_login_and_get_user("user@example.com", "123456")
 
 def test_verify_login_and_get_user_invalid_code():
-    service = AuthService(DummyDB(result={"is_active": True, "user_id": 0}))
+    db_result = {"is_active": True, "user_id": 1, "login_code": "expectedcode"}
+    service = AuthService(DummyDB(result=db_result))
     with pytest.raises(InvalidLoginCodeError):
-        service.verify_login_and_get_user("user@example.com", "badcode")
+        service.verify_login_and_get_user("user@example.com", "wrongcode")
 
 def test_verify_login_and_get_user_success():
     permissions = [{"module_name": "mod", "bu_name": "bu", "access_type": "read"}]
