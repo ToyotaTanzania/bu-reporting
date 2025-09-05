@@ -41,10 +41,10 @@ def verify_code(
         raise HTTPException(status_code=400, detail=str(e))
     except EmailNotFoundError as e:
         raise HTTPException(status_code=404, detail=str(e))
-    except UserNotActiveError as e:
-        raise HTTPException(status_code=403, detail=str(e))
     except InvalidLoginCodeError as e:
         raise HTTPException(status_code=400, detail=str(e))
+    except UserNotActiveError as e:
+        raise HTTPException(status_code=403, detail=str(e))
     except pymssql.Error as e:
         raise HTTPException(status_code=500, detail="A database error occurred during verification.")
     except Exception as e:
