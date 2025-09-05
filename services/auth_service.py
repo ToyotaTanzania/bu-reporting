@@ -74,7 +74,7 @@ class AuthService:
                 cursor.callproc('usp_verify_login_code', (email, code))
                 user_data = cursor.fetchone()
 
-                if user_data is None or user_data.get('user_id', 0) <= 0:
+                if user_data is None or not user_data.get('email_exists', False):
                     logger.warning(f"Email not found during login attempt: {email}")
                     raise EmailNotFoundError("Email not found.")
 

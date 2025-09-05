@@ -4,7 +4,13 @@ from exceptions import EmailNotFoundError, InvalidLoginCodeError, UserNotActiveE
 
 class DummyCursor:
     def __init__(self, result=None, permissions=None):
-        self.result = result
+        if result is not None and isinstance(result, dict):
+            self.result = dict(result)
+            self.result.setdefault('email_exists', True)
+        elif result is None:
+            self.result = None
+        else:
+            self.result = result
         self.permissions = permissions or []
         self.proc_calls = []
     def __enter__(self):
