@@ -67,7 +67,10 @@ def test_verify_login_and_get_user_invalid_code():
         service.verify_login_and_get_user("user@example.com", "wrongcode")
 
 def test_verify_login_and_get_user_success():
-    permissions = [{"module_name": "mod", "bu_name": "bu", "access_type": "read"}]
+    permissions = [
+        {"module_name": "mod", "bu_name": "bu", "access_type": "read"},
+        {"module_name": "mod2", "bu_name": "bu2", "access_type": "write"}
+    ]
     result = {
         "is_active": True,
         "user_id": 42,
@@ -88,3 +91,5 @@ def test_verify_login_and_get_user_success():
     assert resp["data"]["is_admin"] is True
     assert resp["data"]["permissions"] == permissions
     assert db.committed is True
+    assert isinstance(resp["data"]["permissions"], list)
+    assert all("module_name" in perm and "bu_name" in perm and "access_type" in perm for perm in resp["data"]["permissions"])
