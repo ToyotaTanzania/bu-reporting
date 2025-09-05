@@ -21,7 +21,7 @@ class AuthService:
             with self.db.cursor(as_dict=True) as cursor:
                 cursor.callproc('usp_generate_login_code', (email,))
                 result = cursor.fetchone()
-                if not result.get('email_exists', False):
+                if result is None or not result.get('email_exists', False):
                     logger.warning(f"Email not found: {email}")
                     raise EmailNotFoundError("Email not found.")
                 if not result.get('is_active', False):
