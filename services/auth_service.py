@@ -21,9 +21,9 @@ class AuthService:
             with self.db.cursor(as_dict=True) as cursor:
                 cursor.callproc('usp_generate_login_code', (email,))
                 result = cursor.fetchone()
-                if not result or result.get('user_id', 0) <= 0:
-                    logger.warning(f"Email not found or user is not active: {email}")
-                    raise EmailNotFoundError("Email not found or user is not active.")
+                if not result.get('email_exists', False):
+                    logger.warning(f"Email not found: {email}")
+                    raise EmailNotFoundError("Email not found.")
                 if not result.get('is_active', False):
                     logger.warning(f"User is not active: {email}")
                     raise UserNotActiveError("User is not active.")
@@ -64,9 +64,9 @@ class AuthService:
             with self.db.cursor(as_dict=True) as cursor:
                 cursor.callproc('usp_verify_login_code', (email, code))
                 user_data = cursor.fetchone()
-                if not user_data or user_data.get('user_id', 0) <= 0:
-                    logger.warning(f"Email not found or user is not active: {email}")
-                    raise EmailNotFoundError("Email not found or user is not active.")
+                if not user_data or not user_data.get('email_exists', False):
+                    logger.warning(f"Email not found: {email}")
+                    raise EmailNotFoundError("Email not found.")
                 if not user_data.get('is_active', False):
                     logger.warning(f"User is not active: {email}")
                     raise UserNotActiveError("User is not active.")
