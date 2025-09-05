@@ -77,14 +77,14 @@ class AuthService:
                 if user_data is None or not user_data.get('email_exists', False):
                     logger.warning(f"Email not found during login attempt: {email}")
                     raise EmailNotFoundError("Email not found.")
+                
+                if not user_data.get('login_code') or user_data.get('login_code') != code:
+                    logger.warning(f"Invalid or expired login code for email: {email}")
+                    raise InvalidLoginCodeError("Invalid or expired login code.")
 
                 if not user_data.get('is_active', False):
                     logger.warning(f"User is not active during login attempt: {email}")
                     raise UserNotActiveError("User is not active.")
-
-                if not user_data.get('login_code') or user_data.get('login_code') != code:
-                    logger.warning(f"Invalid or expired login code for email: {email}")
-                    raise InvalidLoginCodeError("Invalid or expired login code.")
 
                 user_id = user_data['user_id']
                 first_name = user_data.get('first_name', 'User')
