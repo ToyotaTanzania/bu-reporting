@@ -6,3 +6,6 @@ class InvalidLoginCodeError(Exception):
 
 class UserNotActiveError(Exception):
     pass
+
+class ReportingPeriodError(Exception):
+    pass
