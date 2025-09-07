@@ -78,7 +78,7 @@ class AuthService:
                     logger.warning(f"User is not active: {email}. user_data: {user_data}")
                     raise UserNotActiveError("User is not active.")
 
-                if not user_data:
+                if user_data.get('user_id',0) <= 0:
                     logger.warning(f"Invalid or expired login code for email: {email}. user_data: {user_data}")
                     raise InvalidLoginCodeError("Invalid or expired login code.")
 
@@ -88,9 +88,12 @@ class AuthService:
                     raise Exception("user_id missing in user_data.")
 
                 first_name = user_data.get('first_name', 'User')
+
                 cursor.callproc('usp_get_user_permissions', (user_id,))
                 permissions = cursor.fetchall()
+
                 self.db.commit()
+
                 user_session_data = {
                     "is_admin": user_data.get('is_admin', False),
                     "period_start": user_data.get('period_start'),
