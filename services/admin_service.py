@@ -36,7 +36,7 @@ class AdminService:
         logger.info(f"Setting reporting period to {year}/{month} for user {user_id}")
         try:
             with self.db.cursor(as_dict=True) as cursor:
-                cursor.callproc('usp_set_report_period', (year, month, user_id))
+                cursor.callproc('usp_set_reporting_period', (year, month, user_id))
                 result = cursor.fetchone()
             self.db.commit()
             if result and "status" in result:
