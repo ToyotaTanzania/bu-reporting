@@ -64,16 +64,20 @@ class AuthService:
             with self.db.cursor(as_dict=True) as cursor:
                 cursor.callproc('usp_verify_login_code', (email, code))
                 user_data = cursor.fetchone()
+                logger.info(f"verify_login_and_get_user: user_data fetched: {user_data}")
                 if not user_data or not user_data.get('email_exists', False):
-                    logger.warning(f"Email not found: {email}")
+                    logger.warning(f"Email not found: {email}. user_data: {user_data}")
                     raise EmailNotFoundError("Email not found.")
                 if not user_data.get('is_active', False):
-                    logger.warning(f"User is not active: {email}")
+                    logger.warning(f"User is not active: {email}. user_data: {user_data}")
                     raise UserNotActiveError("User is not active.")
                 if not user_data.get('login_code') or user_data.get('login_code') != code:
-                    logger.warning(f"Invalid or expired login code for email: {email}")
+                    logger.warning(f"Invalid or expired login code for email: {email}. user_data: {user_data}")
                     raise InvalidLoginCodeError("Invalid or expired login code.")
-                user_id = user_data['user_id']
+                user_id = user_data.get('user_id')
+                if user_id is None:
+                    logger.error(f"user_id missing in user_data: {user_data}")
+                    raise Exception("user_id missing in user_data.")
                 first_name = user_data.get('first_name', 'User')
                 cursor.callproc('usp_get_user_permissions', (user_id,))
                 permissions = cursor.fetchall()
@@ -86,7 +90,7 @@ class AuthService:
                     "is_priorities_month": user_data.get('is_priorities_month', False),
                     "permissions": permissions
                 }
-                logger.info(f"User {user_id} ({email}) successfully logged in.")
+                logger.info(f"User {user_id} ({email}) successfully logged in. Session data: {user_session_data}")
                 return {
                     "user_id": user_id,
                     "status": "success",
@@ -97,5 +101,5 @@ class AuthService:
             logger.error(f"Database error in verify_login_and_get_user: {ex}")
             raise
         except Exception as e:
-            logger.error(f"Service error in verify_login_and_get_user: {e}")
+            logger.error(f"Service error in verify_login_and_get_user: {e}", exc_info=True)
             raise
