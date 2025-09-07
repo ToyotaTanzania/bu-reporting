@@ -78,8 +78,7 @@ class AuthService:
                     logger.warning(f"User is not active: {email}. user_data: {user_data}")
                     raise UserNotActiveError("User is not active.")
 
-                login_code_db = user_data.get('login_code')
-                if not login_code_db or login_code_db != code:
+                if not user_data:
                     logger.warning(f"Invalid or expired login code for email: {email}. user_data: {user_data}")
                     raise InvalidLoginCodeError("Invalid or expired login code.")
 
