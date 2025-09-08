@@ -16,7 +16,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # Authenticate with GCP via Workload Identity Federation
+    # Authenticate with GCP via Workload Identity Federation.
     - id: 'auth'
       uses: 'google-github-actions/auth@v2'
       with:
