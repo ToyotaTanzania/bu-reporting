@@ -36,7 +36,7 @@ def get_secret(secret_name: str) -> str:
     client = secretmanager.SecretManagerServiceClient()
     secret_path = f"projects/{project_id}/secrets/{secret_name}/versions/latest"
     
-    print(f"[DEBUG] Fetching {secret_name} from Secret Manager: {secret_path}")
+    print(f"[DEBUG] Fetching {secret_name} from Secret Manager : {secret_path}")
     response = client.access_secret_version(name=secret_path)
     return response.payload.data.decode("UTF-8")
 
