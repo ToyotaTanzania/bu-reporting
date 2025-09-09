@@ -16,11 +16,12 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # Authenticate with your GCP Service Account
+    # Authenticate with GCP via Workload Identity Federation.
     - id: 'auth'
       uses: 'google-github-actions/auth@v2'
       with:
-        credentials_json: '${{ secrets.GCP_SA_KEY }}'
+        workload_identity_provider: 'projects/469370512556/locations/global/workloadIdentityPools/github-pool/providers/github'
+        service_account: 'gha-deployer@devproject212.iam.gserviceaccount.com'
 
     # Deploy to App Engine
     - id: 'deploy'
