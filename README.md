@@ -1,4 +1,4 @@
-# bui-reporting
+# bu-reporting
 Add readme info...
 
 <!-- Security scan triggered at 2025-09-01 23:19:59 -->

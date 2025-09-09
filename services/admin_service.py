@@ -28,7 +28,7 @@ class AdminService:
                 logger.error(f"No status returned from usp_close_submission_period for user {user_id}")
                 raise SubmissionPeriodError("No status returned from stored procedure.")
             logger.info(f"Submission period close result for user {user_id}: {result}")
-            return {"status": "success", "message": "Submission period closed successfully."}
+            return result
         except pymssql.Error as ex:
             logger.error(f"Database error while closing submission period for user {user_id}: {ex}")
             raise
