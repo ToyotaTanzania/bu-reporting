@@ -67,6 +67,14 @@ class SetPeriodRequest(BaseModel):
             "example": {"year": 2025, "month": 9}
         }
 
+class ClosePeriodRequest(BaseModel):
+    closed_at: datetime
+
+    class Config:
+        json_schema_extra = {
+            "example": {"closed_at": "2025-09-30T23:59:59"}
+        }
+
 class LogRequest(BaseModel):
     level: str
     message: str

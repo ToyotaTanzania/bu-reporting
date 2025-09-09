@@ -4,7 +4,7 @@ import ssl
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-from pydantic import EmailStr
+import pymssql
 
 from config import settings, logger
 import io
@@ -35,7 +35,9 @@ def update_items_from_xml(db, table_name: str, xml_string: str, user_id: int, it
             "message": message,
             "affected_rows": affected_rows
         }
-
+    except pymssql.Error as ex:
+        logger.error(f"Database Helper Error in update_items_from_xml: {ex}")
+        raise
     except Exception as e:
         logger.error(f"Generic Service Error in update_items_from_xml: {e}")
         raise
