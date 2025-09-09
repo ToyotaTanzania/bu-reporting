@@ -59,8 +59,7 @@ class Settings(BaseSettings):
     ]
 
     # Database
-    # DB_SERVER: str = get_secret("DB_SERVER")
-    DB_SERVER="41.175.62.42"
+    DB_SERVER: str = get_secret("DB_SERVER")
     DB_DATABASE: str = get_secret("DB_DATABASE")
     DB_USER: str = get_secret("DB_USER")
     DB_PASSWORD: str = get_secret("DB_PASSWORD")

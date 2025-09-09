@@ -42,15 +42,7 @@ jobs:
         pip install -r requirements.txt
 
     # ------------------------------
-    # Step 4: Create a production .env
-    # ------------------------------
-    - name: Create production .env
-      run: |
-        echo "RUNNING_LOCALLY=0" > .env
-        cat .env
-
-    # ------------------------------
-    # Step 5: Deploy to App Engine
+    # Step 4: Deploy to App Engine
     # ------------------------------
     - id: 'deploy'
       uses: 'google-github-actions/deploy-appengine@v2'
