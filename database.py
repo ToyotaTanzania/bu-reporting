@@ -6,7 +6,11 @@ from config import settings, logger
 
 db_pool = Queue(maxsize=settings.DB_POOL_SIZE)
 
-def _create_connection():
+def _create_connection():    
+    print('TESTING RON DB_SERVER', settings.DB_SERVER)
+    print('TESTING RON DB_USER', settings.DB_USER)
+    print('TESTING RON DB_PASSWORD', settings.DB_PASSWORD)
+    print('TESTING RON DB_DATABASE', settings.DB_DATABASE)
     try:
         return pymssql.connect(
             server=settings.DB_SERVER,
