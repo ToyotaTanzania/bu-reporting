@@ -4,7 +4,6 @@ from typing import List
 from pydantic import EmailStr
 from pydantic_settings import BaseSettings
 from dotenv import load_dotenv
-load_dotenv()
 
 # -------------------- Logging --------------------
 logging.basicConfig(
@@ -13,32 +12,39 @@ logging.basicConfig(
 )
 logger = logging.getLogger("bu-reporting")
 
+# -------------------- Load local env --------------------
+# Load .env.local first (highest priority), then .env
+if os.path.exists(".env.local"):
+    load_dotenv(".env.local")
+    logger.debug("Loaded .env.local for local development.")
+elif os.path.exists(".env"):
+    load_dotenv(".env")
+    logger.debug("Loaded .env for local development.")
+
 # -------------------- Secret Fetching --------------------
 def get_secret(secret_name: str) -> str:
     """
-    Fetch secret from Google Secret Manager if running in production,
+    Fetch secret from Google Secret Manager in production,
     otherwise read from environment variables (local development).
     """
     running_locally = os.getenv("RUNNING_LOCALLY", "0") == "1"
-    
-    print(f"[DEBUG] RUNNING_LOCALLY={running_locally}") 
-
     if running_locally:
-        print(f"[DEBUG] Fetching {secret_name} from local environment")
+        logger.debug(f"[DEBUG] RUNNING_LOCALLY={running_locally}")
         value = os.getenv(secret_name)
         if not value:
-            raise ValueError(f"Secret {secret_name} not found in .env")
+            raise ValueError(f"Secret '{secret_name}' not found in local environment.")
+        logger.debug(f"[DEBUG] Fetched {secret_name} from local environment")
         return value
 
     # Production: use Secret Manager
     from google.cloud import secretmanager
-    project_id = os.getenv("GOOGLE_CLOUD_PROJECT", "devproject212")
+    project_id = os.getenv("GOOGLE_CLOUD_PROJECT", "devproject212")  # update if needed
     client = secretmanager.SecretManagerServiceClient()
     secret_path = f"projects/{project_id}/secrets/{secret_name}/versions/latest"
-    
-    print(f"[DEBUG] Fetching {secret_name} from Secret Manager : {secret_path}")
+    logger.debug(f"[DEBUG] Fetching {secret_name} from Secret Manager: {secret_path}")
     response = client.access_secret_version(name=secret_path)
     return response.payload.data.decode("UTF-8")
+
 
 # -------------------- Settings --------------------
 class Settings(BaseSettings):
@@ -62,9 +68,9 @@ class Settings(BaseSettings):
     SENDER_EMAIL: EmailStr = get_secret("SENDER_EMAIL")
     SENDER_PASSWORD: str = get_secret("SENDER_PASSWORD")
 
+    class Config:
+        case_sensitive = True
+
+
 # -------------------- Load settings --------------------
 settings = Settings()
-
-# Optional quick test for local vs production
-print("[DEBUG] DB_SERVER:", settings.DB_SERVER)
-print("[DEBUG] SENDER_EMAIL:", settings.SENDER_EMAIL)
