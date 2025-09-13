@@ -41,8 +41,6 @@ if settings.ALLOWED_ORIGINS and settings.ALLOWED_ORIGINS != ["*"]:
         allow_methods=["GET", "POST", "PUT", "DELETE"],
         allow_headers=["Authorization", "Content-Type"],
     )
-else:
-    logger.warning("CORS is set to allow all origins. This is insecure for production!")
 
 # --- Exception Handlers ---
 @app.exception_handler(HTTPException)
