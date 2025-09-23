@@ -44,7 +44,7 @@ class AuthService:
                     <p>This code will expire in <strong>{minutes_to_expire} minutes</strong>.</p>
                     <p>If you did not request this code, you can safely ignore this email.</p>
                     <br>
-                    <p>Thank you,<br><em>BU Reporting Team</em></p>
+                    <p>Thank you,<br><em>KJ Group Reporting</em></p>
                 </body></html>
                 """
                 if not send_email(to_email=email, subject=email_subject, html_content=email_body):
