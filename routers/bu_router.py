@@ -52,6 +52,15 @@ def get_priorities(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {e}")
 
+@router.get("/priority-statuses")
+def get_priority_statuses(
+    service: ReportingService = Depends(get_reporting_service)
+):
+    try:
+        return service.fetch_priority_statuses()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {e}")
+
 @router.get("/tracker-statuses")
 def get_tracker_statuses(
     x_user_id: Optional[int] = Header(None),

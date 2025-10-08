@@ -22,6 +22,10 @@ class ReportingService:
         logger.info(f"Fetching priorities for user {user_id}")
         return fetch_data(db=self.db, proc_name="usp_get_priorities", params=(user_id,))
 
+    def fetch_priority_statuses(self):
+        logger.info("Fetching priority statuses")
+        return fetch_data(db=self.db, proc_name="usp_get_priority_statuses", params=())
+
     def fetch_tracker_statuses(self, user_id: int):
         logger.info(f"Fetching tracker statuses for user {user_id}")
         return fetch_data(db=self.db, proc_name="usp_get_ops_tracker_statuses", params=(user_id,))
