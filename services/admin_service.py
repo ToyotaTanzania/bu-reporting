@@ -75,8 +75,8 @@ class AdminService:
 
     def fetch_okr_master_list(self, bu_id: int, user_id: int) -> Dict[str, Any]:
         logger.info(f"Fetching OKR master list for BU {bu_id} and user {user_id}")
-        return fetch_data(db=self.db, proc_name="adm_get_okr_master", params=(bu_id, user_id))
+        return fetch_data(db=self.db, proc_name="usp_get_okr_master_list", params=(bu_id, user_id))
     
     def fetch_business_units_with_okrs(self, user_id: int) -> Dict[str, Any]:
         logger.info(f"Fetching business units with OKRs for user {user_id}")
-        return fetch_data(db=self.db, proc_name="adm_get_business_units_with_okrs", params=(user_id,))
+        return fetch_data(db=self.db, proc_name="usp_get_business_units_with_okrs", params=(user_id,))

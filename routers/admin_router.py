@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Header
 from services.admin_service import AdminService
 from database import get_db
 from security import require_admin
-from schemas import ClosePeriodRequest, SetPeriodRequest
+from schemas import ClosePeriodRequest, SetPeriodRequest, OKRMasterListRequest
 
 
 router = APIRouter()
@@ -37,11 +37,14 @@ def set_submission_period(
 @router.post("/submission-period/close")
 def close_submission_period(
     request: ClosePeriodRequest,
-    user_id: int = Depends(require_admin),
+    x_user_id: int = Depends(require_admin),
     service: AdminService = Depends(get_admin_service)
 ):
+    if x_user_id is None:
+        raise HTTPException(status_code=401, detail="Unauthorized: User ID is missing.")
+    
     try:
-        return service.close_submission_period(user_id=user_id, closed_at=request.closed_at)
+        return service.close_submission_period(user_id=x_user_id, closed_at=request.closed_at)
     except pymssql.Error as db_error:
         raise HTTPException(status_code=400, detail=str(db_error))
     except Exception as e:
@@ -50,11 +53,14 @@ def close_submission_period(
 
 @router.post("/submission-period/open")
 def open_submission_period(
-    user_id: int = Depends(require_admin),
+    x_user_id: int = Depends(require_admin),
     service: AdminService = Depends(get_admin_service)
 ):
+    if x_user_id is None:
+        raise HTTPException(status_code=401, detail="Unauthorized: User ID is missing.")
+    
     try:
-        return service.open_submission_period(user_id=user_id)
+        return service.open_submission_period(user_id=x_user_id)
     except pymssql.Error as db_error:
         raise HTTPException(status_code=400, detail=str(db_error))
     except Exception as e:
@@ -62,12 +68,15 @@ def open_submission_period(
     
 @router.get("/okrs/list")
 def get_okr_master_list(
-    bu_id: int,
-    user_id: int = Depends(require_admin),
+    request: OKRMasterListRequest,
+    x_user_id: int = Depends(require_admin),
     service: AdminService = Depends(get_admin_service)
 ):
+    if x_user_id is None:
+        raise HTTPException(status_code=401, detail="Unauthorized: User ID is missing.")
+    
     try:
-        return service.fetch_okr_master_list(bu_id=bu_id, user_id=user_id)
+        return service.fetch_okr_master_list(bu_id=request.bu_id, user_id=x_user_id)
     except pymssql.Error as db_error:
         raise HTTPException(status_code=400, detail=str(db_error))
     except Exception as e:
@@ -75,11 +84,14 @@ def get_okr_master_list(
     
 @router.get("/okrs/business-units")
 def get_business_units_with_okrs(
-    user_id: int = Depends(require_admin),
+    x_user_id: int = Depends(require_admin),
     service: AdminService = Depends(get_admin_service)
 ):
+    if x_user_id is None:
+        raise HTTPException(status_code=401, detail="Unauthorized: User ID is missing.")
+    
     try:
-        return service.fetch_business_units_with_okrs(user_id=user_id)
+        return service.fetch_business_units_with_okrs(user_id=x_user_id)
     except pymssql.Error as db_error:
         raise HTTPException(status_code=400, detail=str(db_error))
     except Exception as e:
