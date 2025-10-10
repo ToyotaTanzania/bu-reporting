@@ -84,11 +84,3 @@ class LogRequest(BaseModel):
         json_schema_extra = {
             "example": {"level": "info", "message": "This is a log message", "module_name": "auth"}
         }
-
-class OKRMasterListRequest(BaseModel):
-    bu_id: int
-
-    class Config:
-        json_schema_extra = {
-            "example": {"bu_id": 1}
-        }
