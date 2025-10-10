@@ -309,7 +309,6 @@ def execute_proc_for_xml(db, proc_name: str, params: tuple = ()):
             cursor.callproc(proc_name, params)
             result = cursor.fetchone()
             if result and len(result) > 0:
-                # Assume the first column contains the XML string
                 return result[0]
             else:
                 logger.error(f"No XML data returned from procedure '{proc_name}'")

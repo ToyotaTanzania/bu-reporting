@@ -59,21 +59,8 @@ def open_submission_period(
         raise HTTPException(status_code=400, detail=str(db_error))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {e}")
-
-
-@router.get("/okrs-submissions")
-def get_okr_submissions(
-    user_id: int = Depends(require_admin),
-    service: AdminService = Depends(get_admin_service)
-):
-    try:
-        return service.fetch_okr_submissions(user_id=user_id)
-    except pymssql.Error as db_error:
-        raise HTTPException(status_code=400, detail=str(db_error))
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {e}")
     
-@router.get("/okrs-list/")
+@router.get("/okrs/list")
 def get_okr_master_list(
     bu_id: int,
     user_id: int = Depends(require_admin),
@@ -81,6 +68,18 @@ def get_okr_master_list(
 ):
     try:
         return service.fetch_okr_master_list(bu_id=bu_id, user_id=user_id)
+    except pymssql.Error as db_error:
+        raise HTTPException(status_code=400, detail=str(db_error))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {e}")
+    
+@router.get("/okrs/business-units")
+def get_business_units_with_okrs(
+    user_id: int = Depends(require_admin),
+    service: AdminService = Depends(get_admin_service)
+):
+    try:
+        return service.fetch_business_units_with_okrs(user_id=user_id)
     except pymssql.Error as db_error:
         raise HTTPException(status_code=400, detail=str(db_error))
     except Exception as e:
