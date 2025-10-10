@@ -93,7 +93,7 @@ def get_business_units_with_okrs(
         raise HTTPException(status_code=401, detail="Unauthorized: User ID is missing.")
     
     try:
-        return service.fetch_business_units_with_okrs(user_id=x_user_id)
+        return service.fetch_business_units_with_okrs()
     except pymssql.Error as db_error:
         raise HTTPException(status_code=400, detail=str(db_error))
     except Exception as e:
