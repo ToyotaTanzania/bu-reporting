@@ -11,12 +11,6 @@ class AdminService:
     def __init__(self, db: pymssql.Connection):
         self.db = db
 
-
-    def fetch_okr_submissions(self, user_id: int) -> Any:
-        logger.info(f"Fetching OKR submissions for user {user_id}")
-        return fetch_data(db=self.db, proc_name="usp_get_okr_submissions", params=(user_id,))
-
-
     def close_submission_period(self, user_id: int, closed_at: datetime) -> Dict[str, Any]:
         logger.info(f"Closing submission period for user {user_id}")
         try:
@@ -78,3 +72,7 @@ class AdminService:
         except Exception as e:
             logger.error(f"Error in open_submission_period: {e}")
             raise
+
+    def fetch_okr_master_list(self, bu_id: int, user_id: int) -> Dict[str, Any]:
+        logger.info(f"Fetching OKR master list for BU {bu_id} and user {user_id}")
+        return fetch_data(db=self.db, proc_name="adm_get_okr_master", params=(bu_id, user_id))
