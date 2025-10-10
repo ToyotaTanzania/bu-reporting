@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Header
 from services.admin_service import AdminService
 from database import get_db
 from security import require_admin
-from schemas import ClosePeriodRequest, SetPeriodRequest, OKRMasterListRequest
+from schemas import ClosePeriodRequest, SetPeriodRequest
 
 
 router = APIRouter()
@@ -83,7 +83,7 @@ def get_okr_master_list(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {e}")
 
-    
+
 @router.get("/okrs/business-units")
 def get_business_units_with_okrs(
     x_user_id: int = Depends(require_admin),
