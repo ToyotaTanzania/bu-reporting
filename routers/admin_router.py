@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Header
 from services.admin_service import AdminService
 from database import get_db
 from security import require_admin
-from schemas import ClosePeriodRequest, SetPeriodRequest
+from schemas import ClosePeriodRequest, OkrMasterItem, SetPeriodRequest
 
 
 router = APIRouter()
@@ -62,6 +62,24 @@ def open_submission_period(
     try:
         return service.open_submission_period(user_id=x_user_id)
     except pymssql.Error as db_error:
+        raise HTTPException(status_code=400, detail=str(db_error))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {e}")
+    
+@router.post("okrs/upsert")
+def upsert_okr_item(
+    item: OkrMasterItem,
+    x_user_id: int = Depends(require_admin),
+    service: AdminService = Depends(get_admin_service)
+):
+    if x_user_id is None:
+        raise HTTPException(status_code=401, detail="Unauthorized: User ID is missing.")
+    
+    try:
+        return service.upsert_okr_master_item(item=item, user_id=x_user_id)
+    except pymssql.Error as db_error:
+        if "UQ_okr_master" in str(db_error):
+            raise HTTPException(status_code=409, detail="An item with the same Name, Business Unit, Value Driver, and Sub Value Driver already exists.")
         raise HTTPException(status_code=400, detail=str(db_error))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {e}")

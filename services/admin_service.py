@@ -5,6 +5,7 @@ from typing import Dict, Any
 from config import logger
 from helpers import fetch_data
 from exceptions import SubmissionPeriodError
+from schemas import OkrMasterItem
 
 
 class AdminService:
@@ -115,4 +116,25 @@ class AdminService:
             }
         except pymssql.Error as ex:
             logger.error(f"Database error while fetching lookup data: {ex}")
+            raise
+
+    def upsert_okr_master_item(self, item: OkrMasterItem, user_id: int):
+        logger.info(f"Upserting OKR master item with ID {item.id} by user {user_id}")
+        try:
+            with self.db.cursor(as_dict=True) as cursor:
+                params = (
+                    item.id, item.bu_id, item.value_driver_id, item.sub_value_driver_id, item.name,
+                    item.alt_name1, item.alt_name2, item.alt_name3, item.alt_name4,
+                    item.ppt_row_name, item.ppt_row_sort_order, item.ppt_column_name, item.ppt_column_sort_order,
+                    item.is_aggregated, item.is_calculated, item.calculation_formula, item.is_active,
+                    item.data_type_id, item.currency_id, item.aggregation_type_id, item.metric_type_id,
+                    item.data_source_id, item.sort_order, item.is_dashboard_item, item.is_kjops_item,
+                    item.start_date, item.end_date, user_id
+                )
+                cursor.callproc('usp_upsert_okr_master', params)
+                result = cursor.fetchone()
+            self.db.commit()
+            return result
+        except pymssql.Error as ex:
+            logger.error(f"Database error while saving OKR item: {ex}")
             raise
