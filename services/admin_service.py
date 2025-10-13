@@ -80,3 +80,35 @@ class AdminService:
     def fetch_business_units_with_okrs(self,) -> Dict[str, Any]:
         logger.info(f"Fetching business units with OKRs")
         return fetch_data(db=self.db, proc_name="usp_get_business_units_with_okrs", params=())
+
+    def fetch_okr_master_by_id(self, okr_master_id: int) -> Dict[str, Any]:
+        logger.info(f"Fetching OKR master by ID {okr_master_id}")
+        return fetch_data(db=self.db, proc_name="usp_get_okr_master_by_id", params=(okr_master_id,))
+    
+    def fetch_value_drivers(self) -> Dict[str, Any]:
+        logger.info(f"Fetching value drivers")
+        return fetch_data(db=self.db, proc_name="usp_get_value_drivers", params=())
+
+    def fetch_sub_value_drivers(self) -> Dict[str, Any]:
+        logger.info(f"Fetching sub-value drivers")
+        return fetch_data(db=self.db, proc_name="usp_get_sub_value_drivers", params=())
+    
+    def fetch_aggregation_types(self) -> Dict[str, Any]:
+        logger.info(f"Fetching aggregation types")
+        return fetch_data(db=self.db, proc_name="usp_get_aggregation_types", params=())
+    
+    def fetch_currencies(self) -> Dict[str, Any]:
+        logger.info(f"Fetching currencies")
+        return fetch_data(db=self.db, proc_name="usp_get_currencies", params=())
+    
+    def fetch_data_sources(self) -> Dict[str, Any]:
+        logger.info(f"Fetching data sources")
+        return fetch_data(db=self.db, proc_name="usp_get_data_sources", params=())
+    
+    def fetch_data_types(self) -> Dict[str, Any]:
+        logger.info(f"Fetching data types")
+        return fetch_data(db=self.db, proc_name="usp_get_data_types", params=())
+    
+    def fetch_metric_types(self) -> Dict[str, Any]:
+        logger.info(f"Fetching metric types")
+        return fetch_data(db=self.db, proc_name="usp_get_metric_types", params=())
