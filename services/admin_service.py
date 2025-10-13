@@ -85,7 +85,7 @@ class AdminService:
         logger.info(f"Fetching all lookup data")
         try:
             with self.db.cursor(as_dict=True) as cursor:
-                cursor.callproc('usp_get_all_lookup_data')
+                cursor.callproc('usp_get_admin_lookup_data')
                 business_units = cursor.fetchall()
                 cursor.nextset()
                 value_drivers = cursor.fetchall()
