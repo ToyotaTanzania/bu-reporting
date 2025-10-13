@@ -67,12 +67,12 @@ def open_submission_period(
         raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {e}")
 
 
-@router.get(f"/okrs/list/{{bu_id}}/{{search_term}}")
+@router.get("/okrs/list/{bu_id}")
 def get_okr_master_list(
     bu_id: int,
-    search_term: str = None,
+    search_term: Optional[str] = None,
     x_user_id: int = Depends(require_admin),
-    service: AdminService = Depends(get_admin_service)
+    service: AdminService = Depends(get_admin_service)  
 ):
     if x_user_id is None:
         raise HTTPException(status_code=401, detail="Unauthorized: User ID is missing.")
