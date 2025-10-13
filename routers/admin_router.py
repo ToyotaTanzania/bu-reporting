@@ -66,7 +66,7 @@ def open_submission_period(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {e}")
     
-@router.post("okrs/upsert")
+@router.post("/okrs/upsert")
 def upsert_okr_item(
     item: OkrMasterItem,
     x_user_id: int = Depends(require_admin),
