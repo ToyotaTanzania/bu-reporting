@@ -73,9 +73,9 @@ class AdminService:
             logger.error(f"Error in open_submission_period: {e}")
             raise
 
-    def fetch_okr_master_list(self, bu_id: int) -> Dict[str, Any]:
+    def fetch_okr_master_list(self, bu_id: int, search_term: str = None) -> Dict[str, Any]:
         logger.info(f"Fetching OKR master list for BU {bu_id}")
-        return fetch_data(db=self.db, proc_name="usp_get_okr_master_list", params=(bu_id,))
+        return fetch_data(db=self.db, proc_name="usp_get_okr_master_list", params=(bu_id, search_term))
 
     def fetch_business_units_with_okrs(self,) -> Dict[str, Any]:
         logger.info(f"Fetching business units with OKRs")
