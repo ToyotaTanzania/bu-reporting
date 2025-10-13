@@ -100,22 +100,6 @@ def get_business_units_with_okrs(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {e}")
     
-@router.get("/okrs/{okr_master_id}")
-def get_okr_master_by_id(
-    okr_master_id: int,
-    x_user_id: int = Depends(require_admin),
-    service: AdminService = Depends(get_admin_service)
-):
-    if x_user_id is None:
-        raise HTTPException(status_code=401, detail="Unauthorized: User ID is missing.")
-
-    try:
-        return service.fetch_okr_master_by_id(okr_master_id=okr_master_id)
-    except pymssql.Error as db_error:
-        raise HTTPException(status_code=400, detail=str(db_error))
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {e}")
-    
 
 @router.get("/okrs/value-drivers")
 def get_value_drivers(
@@ -217,6 +201,22 @@ def get_metric_types(
 
     try:
         return service.fetch_metric_types()
+    except pymssql.Error as db_error:
+        raise HTTPException(status_code=400, detail=str(db_error))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {e}")
+
+@router.get("/okrs/{okr_master_id}")
+def get_okr_master_by_id(
+    okr_master_id: int,
+    x_user_id: int = Depends(require_admin),
+    service: AdminService = Depends(get_admin_service)
+):
+    if x_user_id is None:
+        raise HTTPException(status_code=401, detail="Unauthorized: User ID is missing.")
+
+    try:
+        return service.fetch_okr_master_by_id(okr_master_id=okr_master_id)
     except pymssql.Error as db_error:
         raise HTTPException(status_code=400, detail=str(db_error))
     except Exception as e:
