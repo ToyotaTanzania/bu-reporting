@@ -18,6 +18,10 @@ class ReportingService:
         logger.info(f"Fetching OKR tracker for user {user_id}")
         return fetch_data(db=self.db, proc_name="usp_get_okr_tracker_by_user", params=(user_id,))
 
+    def fetch_kjops_by_user(self, user_id: int):
+        logger.info(f"Fetching KJ OPS for user {user_id}")
+        return fetch_data(db=self.db, proc_name="usp_get_kjops_by_user", params=(user_id,))
+
     def fetch_commentaries(self, user_id: int):
         logger.info(f"Fetching commentaries for user {user_id}")
         return fetch_data(db=self.db, proc_name="usp_get_commentary_details", params=(user_id,))
