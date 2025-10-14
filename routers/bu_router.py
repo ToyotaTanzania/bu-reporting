@@ -25,6 +25,19 @@ def get_okrs(
         return service.fetch_okrs(user_id=x_user_id)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {e}")
+    
+@router.get("/okrs/tracker")
+def get_okr_tracker(
+    x_user_id: Optional[int] = Header(None),
+    service: ReportingService = Depends(get_reporting_service)
+):
+    if x_user_id is None:
+        raise HTTPException(status_code=400, detail="X-User-ID header is missing or invalid.")
+    
+    try:
+        return service.fetch_okr_tracker_by_user(user_id=x_user_id)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {e}")
 
 @router.get("/commentaries")
 def get_commentaries(
