@@ -42,14 +42,16 @@ class ReportingService:
         logger.info(f"Fetching overdues for user {user_id}")
         return fetch_data(db=self.db, proc_name="usp_get_ops_overdues", params=(user_id,))
 
-    def fetch_monthly_presentation(self, user_id: int):
-        logger.info(f"Initiating custom PowerPoint report for user {user_id}")
-        xml_data = "<root></root>"
+    def fetch_monthly_presentation(self, user_id: int, business_unit: str = None):
+        logger.info(f"Initiating custom PowerPoint report for user {user_id}" + (f", business_unit={business_unit}" if business_unit else ""))
+        params = (user_id,) if business_unit is None else (user_id, business_unit)
         xml_data = execute_proc_for_xml(
             db=self.db,
             proc_name='usp_generate_monthly_report_xml',
-            params=(user_id,)
+            params=params
         )
+        if not xml_data:
+            xml_data = "<root></root>"
         return create_custom_presentation_from_xml(xml_string=xml_data)
     
 
