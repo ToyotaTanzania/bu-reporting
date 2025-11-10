@@ -65,7 +65,7 @@ class ReportingService:
 
     def bulk_update_priorities(self, xml_string: str, user_id: int):
         logger.info(f"Bulk updating priorities for user {user_id}")
-        return update_items_from_xml(db=self.db, table_name="ops_priorities", xml_string=xml_string, user_id=user_id, item_name="Priorities")
+        return update_items_from_xml(db=self.db, table_name="priorities", xml_string=xml_string, user_id=user_id, item_name="Priorities")
 
     def bulk_update_tracker_statuses(self, xml_string: str, user_id: int):
         logger.info(f"Bulk updating tracker statuses for user {user_id}")
@@ -73,4 +73,5 @@ class ReportingService:
 
     def bulk_update_overdues(self, xml_string: str, user_id: int):
         logger.info(f"Bulk updating overdues for user {user_id}")
+
         return update_items_from_xml(db=self.db, table_name="ops_overdues", xml_string=xml_string, user_id=user_id, item_name="Overdues")
