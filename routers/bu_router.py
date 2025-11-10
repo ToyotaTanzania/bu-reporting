@@ -116,13 +116,14 @@ def get_overdues(
 @router.get("/reports/monthly-presentation")
 def get_monthly_presentation(
     x_user_id: Optional[int] = Header(None),
+    business_unit: Optional[str] = None,
     service: ReportingService = Depends(get_reporting_service)
 ):
     if x_user_id is None:
         raise HTTPException(status_code=400, detail="X-User-ID header is missing or invalid.")
     
     try:
-        ppt_stream = service.fetch_monthly_presentation(user_id=x_user_id)
+        ppt_stream = service.fetch_monthly_presentation(user_id=x_user_id, business_unit=business_unit)
         filename = f"Monthly_Report_{datetime.now().strftime('%Y%m%d%H%M%S')}.pptx"
         return StreamingResponse(
             ppt_stream,
