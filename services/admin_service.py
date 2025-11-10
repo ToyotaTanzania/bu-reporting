@@ -103,6 +103,8 @@ class AdminService:
                 cursor.nextset()
                 metric_types = cursor.fetchall()
                 cursor.nextset()
+                report_business_units = cursor.fetchall()
+                cursor.nextset()
 
             return {
                 "business_units": business_units,
@@ -112,7 +114,8 @@ class AdminService:
                 "currencies": currencies,
                 "data_sources": data_sources,
                 "data_types": data_types,
-                "metric_types": metric_types
+                "metric_types": metric_types,
+                "report_business_units": report_business_units
             }
         except pymssql.Error as ex:
             logger.error(f"Database error while fetching lookup data: {ex}")
